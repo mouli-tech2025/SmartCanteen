@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smart Canteen Management System - Fast, Contactless & Intelligent College Dining Experience">
+  <title>Smart Canteen Management System | College Food-Tech</title>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo" aria-label="Smart Canteen Home">
+        <div class="brand-icon">
+          <!-- Food Bowl / Cutlery SVG -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+        </div>
+        <span>Smart<span class="accent">Canteen</span></span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#hero" class="nav-link active">Home</a>
+        <a href="#roles" class="nav-link">Portals</a>
+        <a href="#menu" class="nav-link">Campus Menu</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="pages/login.html" class="btn btn-secondary btn-sm">Sign In</a>
+        <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Food</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="container hero-grid">
+        <div class="hero-content">
+          <div class="hero-badge-wrap">
+            <span class="badge badge-primary">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              Next-Gen College Dining
+            </span>
+          </div>
+          <h1 class="hero-title">
+            Skip the Long Line. <br>
+            Savor the <span class="highlight">Hot Meal.</span>
+          </h1>
+          <p class="hero-description">
+            A contactless college canteen platform. Browse real-time daily menus, pre-order ahead of class recess, generate instant digital pickup tokens, and track meal preparation live.
+          </p>
+          <div class="hero-actions">
+            <a href="pages/login.html?role=student" class="btn btn-primary btn-lg">
+              Start Student Order
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+            <a href="#menu" class="btn btn-secondary btn-lg">View Today's Menu</a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">0 min</span>
+              <span class="stat-label">Counter Waiting Time</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">8 min</span>
+              <span class="stat-label">Average Meal Prep</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Digital Token System</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Showcase Card -->
+        <div class="hero-visual">
+          <div class="hero-card">
+            <div class="hero-card-header">
+              <div>
+                <span class="badge badge-primary" style="margin-bottom: 0.25rem;">Live Active Order</span>
+                <h3 style="font-size: 1.1rem; font-weight: 700;">Recess Break Order</h3>
+              </div>
+              <div class="hero-token-box">
+                <div class="token-label">Digital Token</div>
+                <div class="token-number">TK-12</div>
+              </div>
+            </div>
+
+            <div class="hero-order-preview">
+              <div class="preview-item">
+                <div class="item-title">
+                  <span>🍔</span>
+                  <span>1x Veg Paneer Burger</span>
+                </div>
+                <span class="item-price">₹60</span>
+              </div>
+              <div class="preview-item">
+                <div class="item-title">
+                  <span>🧋</span>
+                  <span>1x Chilled Cold Coffee</span>
+                </div>
+                <span class="item-price">₹35</span>
+              </div>
+            </div>
+
+            <div class="hero-status-tracker">
+              <div class="status-pulse-dot"></div>
+              <span>Status: Kitchen is preparing your meal</span>
+            </div>
+
+            <div style="margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+              Estimated Pickup: <strong>Counter #2 in ~6 mins</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roles / Portals Section -->
+    <section class="section section-alt" id="roles">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Role-Based Access</span>
+          <h2 class="section-title">Built For The Entire Campus Ecosystem</h2>
+          <p class="section-subtitle">
+            Tailored workflows for students, kitchen staff, and canteen administrators to keep operations running smoothly.
+          </p>
+        </div>
+
+        <div class="roles-grid">
+          <!-- Student Portal Card -->
+          <div class="role-card">
+            <div class="role-icon-box student">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+            </div>
+            <h3 class="role-title">1. Student</h3>
+            <p class="role-desc">
+              Browse campus menus, customize orders, earn digital tokens, and track order stages without standing in line.
+            </p>
+            <div class="role-features">
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Interactive live food catalogue</span>
+              </div>
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Cart & one-click digital checkout</span>
+              </div>
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Token status updates (Preparing/Ready)</span>
+              </div>
+            </div>
+            <a href="pages/login.html?role=student" class="btn btn-outline" style="width: 100%;">Access Student Portal</a>
+          </div>
+
+          <!-- Staff Portal Card -->
+          <div class="role-card">
+            <div class="role-icon-box staff">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"></path>
+                <line x1="6" y1="17" x2="18" y2="17"></line>
+              </svg>
+            </div>
+            <h3 class="role-title">2. Canteen Staff</h3>
+            <p class="role-desc">
+              Kitchen-side display to view incoming orders, update cooking stages, and notify students when plates are ready.
+            </p>
+            <div class="role-features">
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Live token Kanban order board</span>
+              </div>
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>One-tap status updates (Ready / Delivered)</span>
+              </div>
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Stock & item availability toggling</span>
+              </div>
+            </div>
+            <a href="pages/login.html?role=staff" class="btn btn-outline" style="width: 100%;">Access Kitchen Staff</a>
+          </div>
+
+          <!-- Admin Portal Card -->
+          <div class="role-card">
+            <div class="role-icon-box admin">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </div>
+            <h3 class="role-title">3. Administrator</h3>
+            <p class="role-desc">
+              Comprehensive control over the cafeteria: manage menu items, set prices, track daily sales, and view metrics.
+            </p>
+            <div class="role-features">
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Full Menu CRUD (Add/Edit/Remove items)</span>
+              </div>
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Revenue, orders & top-sellers analytics</span>
+              </div>
+              <div class="role-feature-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>User role & account oversight</span>
+              </div>
+            </div>
+            <a href="pages/login.html?role=admin" class="btn btn-outline" style="width: 100%;">Access Admin Portal</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Seamless Flow</span>
+          <h2 class="section-title">How SmartCanteen Works</h2>
+          <p class="section-subtitle">Zero paper tokens, zero crowded counters. Just fresh meals on schedule.</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3 class="step-title">Select Role & Login</h3>
+            <p class="step-desc">Sign in with your student credentials, kitchen staff id, or administrator pass.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3 class="step-title">Browse Live Menu</h3>
+            <p class="step-desc">Pick snacks, meals, or beverages with live stock and realistic canteen pricing.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3 class="step-title">Get Digital Token</h3>
+            <p class="step-desc">Place your order instantly to receive a unique token number like #TK-12.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <h3 class="step-title">Pick Up & Enjoy</h3>
+            <p class="step-desc">Collect your freshly prepared food once the display flashes "Ready for Pickup".</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sample Menu Highlights -->
+    <section class="section section-alt" id="menu">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Fresh & Hygienic</span>
+          <h2 class="section-title">Popular Campus Favorites</h2>
+          <p class="section-subtitle">Prepared fresh daily by our college cafeteria chefs with quality ingredients.</p>
+        </div>
+
+        <div class="menu-grid" id="menuHighlightsContainer">
+          <!-- Fallback items if JS disabled, dynamically enhanced by data.js -->
+          <div class="food-card">
+            <div class="food-card-img">
+              <span>🥞</span>
+              <span class="badge badge-success food-badge">Bestseller</span>
+            </div>
+            <div class="food-card-body">
+              <span class="food-card-category">South Indian</span>
+              <h3 class="food-card-title">Crispy Masala Dosa</h3>
+              <p class="food-card-desc">Crispy fermented crepe filled with spiced potato masala, served with coconut chutney & sambar.</p>
+              <div class="food-card-footer">
+                <span class="food-price">₹50</span>
+                <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-card-img">
+              <span>🍔</span>
+              <span class="badge badge-success food-badge">Chef Special</span>
+            </div>
+            <div class="food-card-body">
+              <span class="food-card-category">Fast Food</span>
+              <h3 class="food-card-title">Veg Paneer Burger</h3>
+              <p class="food-card-desc">Grilled spicy paneer patty topped with fresh lettuce, onions, and tandoori mayo in a toasted bun.</p>
+              <div class="food-card-footer">
+                <span class="food-price">₹60</span>
+                <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-card-img">
+              <span>🥟</span>
+              <span class="badge badge-primary food-badge">Quick Bite</span>
+            </div>
+            <div class="food-card-body">
+              <span class="food-card-category">Snacks</span>
+              <h3 class="food-card-title">Samosa Chaat (2 Pcs)</h3>
+              <p class="food-card-desc">Golden fried samosas crushed and smothered with chickpea curry, sweet curd, and tangy tamarind chutney.</p>
+              <div class="food-card-footer">
+                <span class="food-price">₹35</span>
+                <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-card-img">
+              <span>🍱</span>
+              <span class="badge badge-success food-badge">Healthy Meal</span>
+            </div>
+            <div class="food-card-body">
+              <span class="food-card-category">Meals</span>
+              <h3 class="food-card-title">Special Veg Thali</h3>
+              <p class="food-card-desc">Full wholesome lunch: 3 butter rotis, jeera rice, dal tadka, paneer butter masala, raita & dessert.</p>
+              <div class="food-card-footer">
+                <span class="food-price">₹90</span>
+                <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-card-img">
+              <span>🍜</span>
+              <span class="badge badge-primary food-badge">Student Favorite</span>
+            </div>
+            <div class="food-card-body">
+              <span class="food-card-category">Quick Bites</span>
+              <h3 class="food-card-title">Classic Cheese Maggi</h3>
+              <p class="food-card-desc">Comfort college noodles tossed with fresh vegetables and loaded with grated melted cheese.</p>
+              <div class="food-card-footer">
+                <span class="food-price">₹45</span>
+                <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Now</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="food-card">
+            <div class="food-card-img">
+              <span>🧋</span>
+              <span class="badge badge-success food-badge">Chilled</span>
+            </div>
+            <div class="food-card-body">
+              <span class="food-card-category">Beverages</span>
+              <h3 class="food-card-title">Chilled Cold Coffee</h3>
+              <p class="food-card-desc">Rich espresso blended with chilled milk and chocolate drizzle, served with chocolate chips.</p>
+              <div class="food-card-footer">
+                <span class="food-price">₹35</span>
+                <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 3rem;">
+          <a href="pages/login.html?role=student" class="btn btn-primary btn-lg">Explore Full Canteen Menu</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-banner">
+          <h2 class="cta-title">Ready for Hassle-Free Canteen Meals?</h2>
+          <p class="cta-subtitle">
+            Say goodbye to rush-hour chaos and long queues during recess. Pre-order your favorite meal in seconds.
+          </p>
+          <a href="pages/login.html?role=student" class="btn btn-secondary btn-lg">Launch Student Portal</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo" style="margin-bottom: 0.5rem;">
+            <div class="brand-icon" style="width: 2rem; height: 2rem;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+              </svg>
+            </div>
+            <span>Smart<span class="accent">Canteen</span></span>
+          </div>
+          <p>
+            A lightweight, responsive web application for college canteens with multi-role access and zero-wait queues.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Portals</h4>
+          <ul class="footer-links">
+            <li><a href="pages/login.html?role=student">Student Ordering</a></li>
+            <li><a href="pages/login.html?role=staff">Kitchen Staff Board</a></li>
+            <li><a href="pages/login.html?role=admin">Admin Dashboard</a></li>
+            <li><a href="pages/login.html">Role Login</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Features</h4>
+          <ul class="footer-links">
+            <li><a href="#menu">Live Menu</a></li>
+            <li><a href="#how-it-works">Digital Token System</a></li>
+            <li><a href="#roles">Order Status Tracking</a></li>
+            <li><a href="#">Instant Offline LocalStorage</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Tech Stack</h4>
+          <ul class="footer-links">
+            <li><span>Pure Semantic HTML5</span></li>
+            <li><span>Modern Responsive CSS3</span></li>
+            <li><span>Vanilla JavaScript</span></li>
+            <li><span>Browser LocalStorage API</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Smart Canteen Management System. College Mini-Project.</p>
+        <p>Design Theme: Warm Minimal Food-Tech (Orange #F97316 &bull; Cream #FFF7ED)</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script>
+    // Responsive Navbar Toggle
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+      });
+    }
+
+    // Dynamic Render of Menu from data.js if available
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof getMenuItems === 'function') {
+        const items = getMenuItems();
+        const container = document.getElementById('menuHighlightsContainer');
+        if (container && items && items.length > 0) {
+          // Render top 6 items
+          const displayItems = items.slice(0, 6);
+          container.innerHTML = displayItems.map(item => `
+            <div class="food-card">
+              <div class="food-card-img">
+                <span>${item.icon || '🍽️'}</span>
+                ${item.isPopular ? '<span class="badge badge-success food-badge">Bestseller</span>' : ''}
+              </div>
+              <div class="food-card-body">
+                <span class="food-card-category">${item.category}</span>
+                <h3 class="food-card-title">${item.name}</h3>
+                <p class="food-card-desc">${item.desc}</p>
+                <div class="food-card-footer">
+                  <span class="food-price">₹${item.price}</span>
+                  <a href="pages/login.html?role=student" class="btn btn-primary btn-sm">Order Now</a>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
