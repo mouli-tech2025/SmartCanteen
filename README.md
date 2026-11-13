@@ -255,12 +255,3 @@ Pending ──► Preparing ──► Ready ──► Completed
 - **Demo payments**: Simulates "Pay at Counter" and wallet checkouts without live payment gateway APIs.
 
 ---
-
-## 14. Viva Reference Questions & Answers
-
-1. **Why use LocalStorage instead of a database for this project?**
-   *Answer*: LocalStorage provides zero-setup, client-side persistence directly in the browser. It allows the project to be portable and easily demonstrated on any computer without configuring database servers or web services.
-2. **How does real-time synchronization work between student and staff tabs?**
-   *Answer*: Modern browsers fire a `storage` event in other tabs whenever LocalStorage is modified. The application listens for this event and supplements it with a lightweight 3-second check so state changes (such as a meal becoming `Ready`) reflect immediately across open tabs.
-3. **How does category deletion protection work?**
-   *Answer*: Before removing a category, `deleteCategory()` inspects the current menu. If any item's category matches, deletion is rejected and a warning message informs the administrator to reassign or delete the associated items first.
