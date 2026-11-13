@@ -1,2 +1,7 @@
+# macOS system files
 .DS_Store
+**/.DS_Store
+
+# ZIP archives
 Archive.zip
+*.zip
