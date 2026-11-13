@@ -1013,3 +1013,12 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Unavailable Item Styling */
+.food-card.food-unavailable {
+    opacity: 0.68;
+}
+
+.food-card.food-unavailable .food-image {
+    filter: grayscale(40%);
+}

@@ -1,4 +1,3 @@
-
 /* ==========================================
    SMART CANTEEN - CENTRAL DATA MANAGEMENT
 ========================================== */
@@ -7,8 +6,26 @@ const STORAGE_KEYS = {
     USERS: "smartCanteenUsers",
     SESSION: "smartCanteenCurrentUser",
     MENU: "smartCanteenMenu",
-    ORDERS: "smartCanteenOrders"
+    ORDERS: "smartCanteenOrders",
+    CATEGORIES: "smartCanteenCategories"
 };
+
+// ==========================================
+// 1. SAFE JSON READER
+// ==========================================
+
+function readJSON(key, fallback) {
+    try {
+        const item = localStorage.getItem(key);
+        if (item === null || item === undefined || item === "") {
+            return fallback;
+        }
+        const value = JSON.parse(item);
+        return value === null ? fallback : value;
+    } catch (error) {
+        return fallback;
+    }
+}
 
 // ==========================================
 // DEFAULT FOOD MENU
@@ -137,6 +154,29 @@ const DEFAULT_MENU = [
     }
 ];
 
+// Default Initial Categories (Snacks, Breakfast, Lunch, Beverages)
+const DEFAULT_CATEGORIES = ["Snacks", "Breakfast", "Lunch", "Beverages"];
+
+// Pre-configured Demo Students
+const DEFAULT_DEMO_USERS = [
+    {
+        id: "STU001",
+        name: "Rahul Sharma",
+        email: "student@smartcanteen.com",
+        password: "Student@123",
+        role: "student",
+        createdAt: "2026-11-13T10:00:00.000Z"
+    },
+    {
+        id: "STU002",
+        name: "Priya Patel",
+        email: "priya@smartcanteen.com",
+        password: "Student@123",
+        role: "student",
+        createdAt: "2026-11-13T10:30:00.000Z"
+    }
+];
+
 // ==========================================
 // INITIALIZE APPLICATION DATA
 // ==========================================
@@ -156,10 +196,18 @@ function initializeAppData() {
         );
     }
 
-    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+    const currentUsers = readJSON(STORAGE_KEYS.USERS, null);
+    if (!currentUsers || currentUsers.length === 0) {
         localStorage.setItem(
             STORAGE_KEYS.USERS,
-            JSON.stringify([])
+            JSON.stringify(DEFAULT_DEMO_USERS)
+        );
+    }
+
+    if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
+        localStorage.setItem(
+            STORAGE_KEYS.CATEGORIES,
+            JSON.stringify(DEFAULT_CATEGORIES)
         );
     }
 }
@@ -169,9 +217,12 @@ function initializeAppData() {
 // ==========================================
 
 function getMenu() {
-    return JSON.parse(
-        localStorage.getItem(STORAGE_KEYS.MENU)
-    ) || [];
+    return readJSON(STORAGE_KEYS.MENU, DEFAULT_MENU);
+}
+
+// Backward-compatibility alias for landing page or other callers
+function getMenuItems() {
+    return getMenu();
 }
 
 function saveMenu(menu) {
@@ -182,13 +233,133 @@ function saveMenu(menu) {
 }
 
 // ==========================================
+// CATEGORY MANAGEMENT (ADMIN & STUDENT)
+// ==========================================
+
+function getCategories() {
+    let categories = readJSON(STORAGE_KEYS.CATEGORIES, null);
+
+    if (!categories || !Array.isArray(categories) || categories.length === 0) {
+        // Build initial list from menu items if categories key is not set
+        const menu = getMenu();
+        const extracted = [];
+        menu.forEach(item => {
+            if (item.category && !extracted.includes(item.category)) {
+                extracted.push(item.category);
+            }
+        });
+        categories = extracted.length > 0 ? extracted : [...DEFAULT_CATEGORIES];
+        saveCategories(categories);
+    }
+
+    return categories;
+}
+
+function saveCategories(categories) {
+    localStorage.setItem(
+        STORAGE_KEYS.CATEGORIES,
+        JSON.stringify(categories)
+    );
+}
+
+function addCategory(name) {
+    const trimmed = String(name || "").trim();
+
+    if (trimmed.length < 2 || trimmed.length > 20) {
+        return { ok: false, msg: "Category name must be between 2 and 20 characters." };
+    }
+
+    const categories = getCategories();
+    const isDuplicate = categories.some(cat => cat.toLowerCase() === trimmed.toLowerCase());
+
+    if (isDuplicate) {
+        return { ok: false, msg: `Category "${trimmed}" already exists.` };
+    }
+
+    categories.push(trimmed);
+    saveCategories(categories);
+
+    return { ok: true, msg: `Category "${trimmed}" added successfully.` };
+}
+
+function renameCategory(oldName, newName) {
+    const trimmedOld = String(oldName || "").trim();
+    const trimmedNew = String(newName || "").trim();
+
+    if (trimmedNew.length < 2 || trimmedNew.length > 20) {
+        return { ok: false, msg: "New category name must be between 2 and 20 characters." };
+    }
+
+    const categories = getCategories();
+    const index = categories.findIndex(cat => cat.toLowerCase() === trimmedOld.toLowerCase());
+
+    if (index === -1) {
+        return { ok: false, msg: `Category "${trimmedOld}" not found.` };
+    }
+
+    const isDuplicate = categories.some((cat, i) => i !== index && cat.toLowerCase() === trimmedNew.toLowerCase());
+    if (isDuplicate) {
+        return { ok: false, msg: `Category "${trimmedNew}" already exists.` };
+    }
+
+    // Update categories array
+    categories[index] = trimmedNew;
+    saveCategories(categories);
+
+    // Update all menu items using oldName
+    const menu = getMenu();
+    let updatedCount = 0;
+    menu.forEach(item => {
+        if (item.category && item.category.toLowerCase() === trimmedOld.toLowerCase()) {
+            item.category = trimmedNew;
+            updatedCount++;
+        }
+    });
+
+    if (updatedCount > 0) {
+        saveMenu(menu);
+    }
+
+    return {
+        ok: true,
+        msg: `Renamed category to "${trimmedNew}". Updated ${updatedCount} food item(s).`
+    };
+}
+
+function deleteCategory(name) {
+    const trimmed = String(name || "").trim();
+    const categories = getCategories();
+    const index = categories.findIndex(cat => cat.toLowerCase() === trimmed.toLowerCase());
+
+    if (index === -1) {
+        return { ok: false, msg: `Category "${trimmed}" not found.` };
+    }
+
+    // Check if any menu item is currently using this category
+    const menu = getMenu();
+    const itemsInCat = menu.filter(item =>
+        item.category && item.category.toLowerCase() === trimmed.toLowerCase()
+    );
+
+    if (itemsInCat.length > 0) {
+        return {
+            ok: false,
+            msg: `Cannot delete "${trimmed}": ${itemsInCat.length} food item(s) are currently assigned to this category. Please reassign or delete them first.`
+        };
+    }
+
+    categories.splice(index, 1);
+    saveCategories(categories);
+
+    return { ok: true, msg: `Category "${trimmed}" deleted successfully.` };
+}
+
+// ==========================================
 // ORDER MANAGEMENT
 // ==========================================
 
 function getOrders() {
-    return JSON.parse(
-        localStorage.getItem(STORAGE_KEYS.ORDERS)
-    ) || [];
+    return readJSON(STORAGE_KEYS.ORDERS, []);
 }
 
 function saveOrders(orders) {
@@ -199,28 +370,83 @@ function saveOrders(orders) {
 }
 
 // ==========================================
-// CURRENT USER
+// USER & SESSION MANAGEMENT
 // ==========================================
 
 function getLoggedInUser() {
-    return JSON.parse(
-        localStorage.getItem(STORAGE_KEYS.SESSION)
+    return readJSON(STORAGE_KEYS.SESSION, null);
+}
+
+function getUsers() {
+    return readJSON(STORAGE_KEYS.USERS, []);
+}
+
+function saveUsers(users) {
+    localStorage.setItem(
+        STORAGE_KEYS.USERS,
+        JSON.stringify(users)
     );
 }
 
+// Student Cart Persistence
+function getStudentCart(studentId) {
+    if (!studentId) return [];
+    return readJSON("smartCanteenCart_" + studentId, []);
+}
+
+function saveStudentCart(studentId, cart) {
+    if (!studentId) return;
+    localStorage.setItem("smartCanteenCart_" + studentId, JSON.stringify(cart));
+}
+
 // ==========================================
-// ORDER TOKEN GENERATION
+// ORDER TOKEN GENERATION (FIXED HIGHEST + 1)
 // ==========================================
 
 function generateOrderToken() {
     const orders = getOrders();
 
-    const nextNumber = orders.length + 1;
+    const highestNumber = orders.reduce((max, order) => {
+        const rawToken = String(order.token || order.orderToken || "");
+        const match = rawToken.match(/TK-(\d+)/i) || rawToken.match(/(\d+)/);
+        const num = match ? parseInt(match[1], 10) : 0;
+        return !isNaN(num) && num > max ? num : max;
+    }, 0);
+
+    const nextNumber = highestNumber + 1;
 
     return "TK-" + String(nextNumber).padStart(3, "0");
 }
 
-// Initialize data when the script loads
+// ==========================================
+// RESET DEMO DATA
+// ==========================================
+
+function resetDemoData() {
+    // Remove menu, orders, categories, and student carts
+    localStorage.removeItem(STORAGE_KEYS.MENU);
+    localStorage.removeItem(STORAGE_KEYS.ORDERS);
+    localStorage.removeItem(STORAGE_KEYS.CATEGORIES);
+
+    // Remove any student cart keys
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith("smartCanteenCart_")) {
+            keysToRemove.push(key);
+        }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+
+    // Re-initialize app data
+    initializeAppData();
+    getCategories();
+
+    console.log("Smart Canteen demo data reset successfully.");
+}
+
+// Initialize data when script loads
 initializeAppData();
+getCategories();
 
 console.log("Smart Canteen data initialized.");

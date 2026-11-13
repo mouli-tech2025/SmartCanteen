@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Smart Canteen</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        body {
+            background: #fffaf5;
+            min-height: 100vh;
+        }
+
+        .auth-wrapper {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 460px;
+            background: white;
+            padding: 38px;
+            border-radius: 22px;
+            border: 1px solid #fed7aa;
+            box-shadow: 0 15px 45px rgba(41, 37, 36, 0.08);
+        }
+
+        .auth-heading {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .auth-icon {
+            width: 65px;
+            height: 65px;
+            background: #ffedd5;
+            display: grid;
+            place-items: center;
+            font-size: 30px;
+            border-radius: 18px;
+            margin: 0 auto 18px;
+        }
+
+        .auth-heading h1 {
+            font-size: 28px;
+            color: #292524;
+            margin-bottom: 9px;
+        }
+
+        .auth-heading p {
+            color: #78716c;
+            font-size: 14px;
+        }
+
+        .role-label,
+        .form-group label {
+            display: block;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 9px;
+            color: #44403c;
+        }
+
+        .role-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .role-option {
+            border: 1px solid #e7e5e4;
+            border-radius: 12px;
+            padding: 13px 5px;
+            background: #fffaf5;
+            cursor: pointer;
+            color: #57534e;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .role-option span {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .role-option.active {
+            border: 2px solid #f97316;
+            background: #fff1e5;
+            color: #ea580c;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #e7e5e4;
+            border-radius: 10px;
+            outline: none;
+            font-size: 14px;
+            background: #fff;
+            color: #292524;
+        }
+
+        .form-group input:focus {
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .auth-submit {
+            width: 100%;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f97316;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .auth-submit:hover {
+            background: #ea580c;
+        }
+
+        .auth-switch {
+            margin-top: 22px;
+            font-size: 14px;
+            color: #78716c;
+            text-align: center;
+        }
+
+        .auth-switch button {
+            background: none;
+            border: none;
+            color: #ea580c;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .auth-message {
+            display: none;
+            padding: 12px;
+            border-radius: 9px;
+            font-size: 13px;
+            margin-bottom: 17px;
+            text-align: left;
+        }
+
+        .auth-message.error {
+            display: block;
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .auth-message.success {
+            display: block;
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .auth-note {
+            margin-top: 20px;
+            padding: 13px;
+            background: #fff7ed;
+            border-radius: 10px;
+            color: #9a3412;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 500px) {
+            .auth-card {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="../index.html" class="brand-logo">
+                <div class="brand-icon">🍽️</div>
+                <span>Smart<span class="accent">Canteen</span></span>
+            </a>
+
+            <a href="../index.html" class="btn btn-secondary btn-sm">
+                ← Back to Home
+            </a>
+        </div>
+    </header>
+
+    <!-- Authentication Section -->
+    <main class="auth-wrapper">
+
+        <section class="auth-card">
+
+            <div class="auth-heading">
+                <div class="auth-icon">🍽️</div>
+                <h1 id="authTitle">Welcome Back!</h1>
+                <p id="authSubtitle">
+                    Sign in to continue to Smart Canteen.
+                </p>
+            </div>
+
+            <!-- Role Selection -->
+            <label class="role-label">Select Your Portal</label>
+
+            <div class="role-options">
+
+                <button type="button"
+                        class="role-option active"
+                        data-role="student">
+                    <span>🎓</span>
+                    Student
+                </button>
+
+                <button type="button"
+                        class="role-option"
+                        data-role="staff">
+                    <span>👨‍🍳</span>
+                    Staff
+                </button>
+
+                <button type="button"
+                        class="role-option"
+                        data-role="admin">
+                    <span>🛠️</span>
+                    Admin
+                </button>
+
+            </div>
+
+            <!-- Message -->
+            <div id="authMessage" class="auth-message"></div>
+
+            <!-- Authentication Form -->
+            <form id="authForm">
+
+                <!-- Name: Only for Student Registration -->
+                <div class="form-group hidden" id="nameGroup">
+                    <label for="name">Full Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your full name"
+                        autocomplete="name">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        required
+                        autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="auth-submit" id="submitButton">
+                    Sign In →
+                </button>
+
+            </form>
+
+            <!-- Registration Toggle -->
+            <div class="auth-switch" id="registerSection">
+                Don't have a student account?
+                <button type="button" id="registerToggle">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Demo Information -->
+            <div class="auth-note" id="demoInfo">
+                <strong>Demo Access</strong><br>
+                Student: Create an account to get started.<br>
+                Staff and Admin: Use the demo credentials provided with the project.
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="../js/auth.js"></script>
+
+</body>
+</html>

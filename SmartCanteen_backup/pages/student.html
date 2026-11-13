@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | Smart Canteen</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/student.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="student-body">
+
+    <!-- Top Navigation -->
+    <header class="student-navbar">
+        <a href="../index.html" class="student-brand">
+            <span class="student-brand-icon">🍽️</span>
+            Smart<span>Canteen</span>
+        </a>
+
+        <div class="student-nav-right">
+            <span class="student-user-name" id="navUserName">Student</span>
+            <button class="logout-btn" onclick="logoutUser()">
+                ↪ Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="student-layout">
+
+        <!-- Sidebar -->
+        <aside class="student-sidebar">
+
+            <div class="sidebar-profile">
+                <div class="profile-avatar">🎓</div>
+                <div>
+                    <strong id="sidebarUserName">Student</strong>
+                    <small>Student Portal</small>
+                </div>
+            </div>
+
+            <p class="sidebar-heading">MAIN MENU</p>
+
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                    <span>🏠</span> Dashboard
+                </a>
+
+                <a href="#menu" class="sidebar-link" data-section="menu">
+                    <span>🍔</span> Campus Menu
+                </a>
+
+                <a href="#orders" class="sidebar-link" data-section="orders">
+                    <span>📦</span> My Orders
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-help">
+                    <span>💡</span>
+                    <strong>Need Help?</strong>
+                    <p>Contact your campus canteen staff for assistance.</p>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="student-main">
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="student-section">
+
+                <div class="welcome-section">
+                    <div>
+                        <span class="welcome-label">STUDENT DASHBOARD</span>
+                        <h1>Hello, <span id="welcomeName">Student</span>! 👋</h1>
+                        <p>What would you like to eat today?</p>
+                    </div>
+
+                    <div class="welcome-date" id="currentDate"></div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="student-stats">
+
+                    <div class="student-stat-card">
+                        <div class="stat-icon orange">🍔</div>
+                        <div>
+                            <span>Total Orders</span>
+                            <h2 id="totalOrders">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="student-stat-card">
+                        <div class="stat-icon green">✅</div>
+                        <div>
+                            <span>Completed Orders</span>
+                            <h2 id="completedOrders">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="student-stat-card">
+                        <div class="stat-icon blue">⏳</div>
+                        <div>
+                            <span>Active Orders</span>
+                            <h2 id="activeOrders">0</h2>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Promotional Banner -->
+                <div class="student-banner">
+                    <div>
+                        <span>FRESH FOOD • SMART ORDERING</span>
+                        <h2>Your Favourite Meals,<br>Just a Click Away!</h2>
+                        <button onclick="showSection('menu')" class="banner-btn">
+                            Explore Menu →
+                        </button>
+                    </div>
+                    <div class="banner-food">🍕</div>
+                </div>
+
+                <!-- Popular Food -->
+                <div class="content-heading">
+                    <div>
+                        <h2>Popular Today</h2>
+                        <p>Our most loved campus meals.</p>
+                    </div>
+                    <button class="text-link" onclick="showSection('menu')">
+                        View All →
+                    </button>
+                </div>
+
+                <div class="food-grid" id="popularFoodGrid"></div>
+
+                <!-- Recent Orders -->
+                <div class="content-heading">
+                    <div>
+                        <h2>Recent Orders</h2>
+                        <p>Check your latest food orders.</p>
+                    </div>
+                    <button class="text-link" onclick="showSection('orders')">
+                        View All →
+                    </button>
+                </div>
+
+                <div id="recentOrdersContainer"></div>
+
+            </section>
+
+
+            <!-- MENU SECTION -->
+            <section id="menu" class="student-section hidden">
+
+                <div class="welcome-section">
+                    <div>
+                        <span class="welcome-label">EXPLORE OUR FOOD</span>
+                        <h1>Campus Menu 🍽️</h1>
+                        <p>Discover delicious food available in your canteen.</p>
+                    </div>
+                </div>
+
+                <div class="menu-toolbar">
+
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input
+                            type="search"
+                            id="foodSearch"
+                            placeholder="Search your favourite food..."
+                        >
+                    </div>
+
+                    <select id="sortFood">
+                        <option value="default">Sort By</option>
+                        <option value="low">Price: Low to High</option>
+                        <option value="high">Price: High to Low</option>
+                        <option value="name">Name: A to Z</option>
+                    </select>
+
+                </div>
+
+                <div class="category-filters">
+                    <button class="category-btn active" data-category="All">All Items</button>
+                    <button class="category-btn" data-category="Breakfast">🌅 Breakfast</button>
+                    <button class="category-btn" data-category="Lunch">🍛 Lunch</button>
+                    <button class="category-btn" data-category="Snacks">🍔 Snacks</button>
+                    <button class="category-btn" data-category="Beverages">🥤 Beverages</button>
+                </div>
+
+                <div class="menu-result-info">
+                    <h2>Available Food</h2>
+                    <span id="foodCount">0 items</span>
+                </div>
+
+                <div class="food-grid" id="menuFoodGrid"></div>
+
+            </section>
+
+
+            <!-- MY ORDERS SECTION -->
+            <section id="orders" class="student-section hidden">
+
+                <div class="welcome-section">
+                    <div>
+                        <span class="welcome-label">ORDER MANAGEMENT</span>
+                        <h1>My Orders 📦</h1>
+                        <p>Track and manage your canteen orders.</p>
+                    </div>
+                </div>
+
+                <div id="ordersContainer"></div>
+
+            </section>
+
+        </main>
+
+        <!-- CART SIDEBAR -->
+        <aside class="cart-sidebar">
+
+            <div class="cart-heading">
+                <div>
+                    <h2>My Cart 🛒</h2>
+                    <p id="cartItemCount">0 items</p>
+                </div>
+                <span class="cart-count" id="cartBadge">0</span>
+            </div>
+
+            <div id="cartItems" class="cart-items">
+                <div class="empty-cart">
+                    <span>🛒</span>
+                    <h3>Your cart is empty</h3>
+                    <p>Add some delicious food to get started.</p>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong id="cartSubtotal">₹0</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Tax (5%)</span>
+                    <strong id="cartTax">₹0</strong>
+                </div>
+
+                <div class="summary-row total-row">
+                    <span>Total Amount</span>
+                    <strong id="cartTotal">₹0</strong>
+                </div>
+
+                <button class="checkout-btn" id="checkoutButton" onclick="checkout()">
+                    Place Order →
+                </button>
+
+                <p class="cart-note">💚 Freshly prepared with care</p>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- ORDER SUCCESS MODAL -->
+    <div class="modal-overlay hidden" id="orderModal">
+
+        <div class="order-modal">
+
+            <div class="success-icon">✓</div>
+
+            <span class="welcome-label">ORDER CONFIRMED</span>
+
+            <h2>Your Order is Placed!</h2>
+
+            <p>Your food order has been sent to the canteen kitchen.</p>
+
+            <div class="token-display">
+                <span>DIGITAL PICKUP TOKEN</span>
+                <h1 id="generatedToken">TK-001</h1>
+            </div>
+
+            <div class="modal-order-details" id="modalOrderDetails"></div>
+
+            <button class="checkout-btn" onclick="closeOrderModal()">
+                Track My Order →
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/student.js"></script>
+
+</body>
+</html>

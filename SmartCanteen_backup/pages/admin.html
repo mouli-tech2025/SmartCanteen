@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Smart Canteen</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+
+<body class="admin-body">
+
+    <div class="admin-layout">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+
+            <div class="admin-brand">
+                <h2>Smart<span>Canteen</span></h2>
+                <p>Admin Panel</p>
+            </div>
+
+            <nav class="admin-nav">
+                <a href="#overview" class="active">Dashboard</a>
+                <a href="#orders">Order Management</a>
+                <a href="#menu">Menu Management</a>
+                <a href="#users">User Management</a>
+                <a href="#reports">Reports</a>
+            </nav>
+
+            <button class="admin-logout" onclick="logoutUser()">
+                Logout
+            </button>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+
+            <header class="admin-header">
+                <div>
+                    <h1>Admin Dashboard</h1>
+                    <p>Manage your canteen operations</p>
+                </div>
+
+                <div class="admin-profile">
+                    <span id="adminName">Administrator</span>
+                </div>
+            </header>
+
+            <!-- Overview -->
+            <section id="overview" class="admin-section">
+
+                <h2>Overview</h2>
+
+                <div class="admin-stats">
+
+                    <div class="admin-stat-card">
+                        <p>Total Orders</p>
+                        <h2 id="totalOrders">0</h2>
+                    </div>
+
+                    <div class="admin-stat-card">
+                        <p>Total Revenue</p>
+                        <h2 id="totalRevenue">₹0</h2>
+                    </div>
+
+                    <div class="admin-stat-card">
+                        <p>Total Menu Items</p>
+                        <h2 id="totalMenuItems">0</h2>
+                    </div>
+
+                    <div class="admin-stat-card">
+                        <p>Total Users</p>
+                        <h2 id="totalUsers">0</h2>
+                    </div>
+
+                </div>
+
+                <div class="admin-panel">
+                    <h3>Recent Orders</h3>
+
+                    <div class="admin-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Student</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="recentOrders">
+                                <tr>
+                                    <td colspan="4">Loading orders...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Orders -->
+            <section id="orders" class="admin-section">
+
+                <h2>Order Management</h2>
+
+                <div class="admin-panel">
+                    <div class="admin-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Student</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="allOrders">
+                                <tr>
+                                    <td colspan="6">Loading orders...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Menu Management -->
+            <section id="menu" class="admin-section">
+
+                <h2>Menu Management</h2>
+
+                <div class="admin-panel">
+                    <h3>Available Menu Items</h3>
+
+                    <div id="adminMenuList">
+                        Loading menu...
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- User Management -->
+            <section id="users" class="admin-section">
+
+                <h2>User Management</h2>
+
+                <div class="admin-panel">
+                    <h3>Registered Users</h3>
+
+                    <div class="admin-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="adminUsers">
+                                <tr>
+                                    <td colspan="3">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Reports -->
+            <section id="reports" class="admin-section">
+
+                <h2>Reports</h2>
+
+                <div class="admin-panel">
+                    <h3>Sales Summary</h3>
+
+                    <p>Total Orders: <strong id="reportOrders">0</strong></p>
+                    <p>Total Revenue: <strong id="reportRevenue">₹0</strong></p>
+                    <p>Completed Orders: <strong id="reportCompleted">0</strong></p>
+                    <p>Pending Orders: <strong id="reportPending">0</strong></p>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+
+</body>
+</html>

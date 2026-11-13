@@ -1,11 +1,18 @@
-
 /* ==========================================
    SMART CANTEEN - AUTHENTICATION MODULE
    Student Registration + Role-Based Login
 ========================================== */
 
-// Demo credentials for Staff and Admin
+// Demo credentials for Student, Staff, and Admin
 const DEMO_ACCOUNTS = {
+    student: {
+        email: "student@smartcanteen.com",
+        password: "Student@123",
+        name: "Rahul Sharma",
+        role: "student",
+        id: "STU001"
+    },
+
     staff: {
         email: "staff@smartcanteen.com",
         password: "Staff@123",
@@ -35,7 +42,14 @@ let isRegisterMode = false;
 // ==========================================
 
 function getUsers() {
-    return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    if (typeof readJSON === "function") {
+        return readJSON(USERS_KEY, []);
+    }
+    try {
+        return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    } catch (e) {
+        return [];
+    }
 }
 
 
@@ -54,6 +68,7 @@ function saveUsers(users) {
 
 function showMessage(message, type) {
     const messageBox = document.getElementById("authMessage");
+    if (!messageBox) return;
 
     messageBox.textContent = message;
     messageBox.className = "auth-message " + type;
@@ -72,58 +87,55 @@ function updateAuthMode() {
     const registerSection = document.getElementById("registerSection");
     const demoInfo = document.getElementById("demoInfo");
     const passwordInput = document.getElementById("password");
-
     const messageBox = document.getElementById("authMessage");
 
-    messageBox.className = "auth-message";
-    messageBox.textContent = "";
+    if (messageBox) {
+        messageBox.className = "auth-message";
+        messageBox.textContent = "";
+    }
 
     if (isRegisterMode) {
+        if (authTitle) authTitle.textContent = "Create Your Account";
+        if (authSubtitle) authSubtitle.textContent = "Register to order your favourite food.";
+        if (nameGroup) nameGroup.classList.remove("hidden");
+        if (submitButton) submitButton.textContent = "Create Account →";
 
-        authTitle.textContent = "Create Your Account";
-        authSubtitle.textContent = "Register to order your favourite food.";
+        if (registerSection) {
+            registerSection.innerHTML = `
+                Already have an account?
+                <button type="button" id="registerToggle">
+                    Sign In
+                </button>
+            `;
+        }
 
-        nameGroup.classList.remove("hidden");
-
-        submitButton.textContent = "Create Account →";
-
-        registerSection.innerHTML = `
-            Already have an account?
-            <button type="button" id="registerToggle">
-                Sign In
-            </button>
-        `;
-
-        demoInfo.classList.add("hidden");
-
-        passwordInput.autocomplete = "new-password";
+        if (demoInfo) demoInfo.classList.add("hidden");
+        if (passwordInput) passwordInput.autocomplete = "new-password";
 
     } else {
+        if (authTitle) authTitle.textContent = "Welcome Back!";
+        if (authSubtitle) authSubtitle.textContent = "Sign in to continue to Smart Canteen.";
+        if (nameGroup) nameGroup.classList.add("hidden");
+        if (submitButton) submitButton.textContent = "Sign In →";
 
-        authTitle.textContent = "Welcome Back!";
-        authSubtitle.textContent = "Sign in to continue to Smart Canteen.";
+        if (registerSection) {
+            registerSection.innerHTML = `
+                Don't have a student account?
+                <button type="button" id="registerToggle">
+                    Create Account
+                </button>
+            `;
+        }
 
-        nameGroup.classList.add("hidden");
-
-        submitButton.textContent = "Sign In →";
-
-        registerSection.innerHTML = `
-            Don't have a student account?
-            <button type="button" id="registerToggle">
-                Create Account
-            </button>
-        `;
-
-        demoInfo.classList.remove("hidden");
-
-        passwordInput.autocomplete = "current-password";
+        if (demoInfo) demoInfo.classList.remove("hidden");
+        if (passwordInput) passwordInput.autocomplete = "current-password";
     }
 
     // Reattach event listener after updating HTML
-    document.getElementById("registerToggle").addEventListener(
-        "click",
-        toggleRegisterMode
-    );
+    const toggleBtn = document.getElementById("registerToggle");
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", toggleRegisterMode);
+    }
 }
 
 
@@ -132,7 +144,6 @@ function updateAuthMode() {
 // ==========================================
 
 function toggleRegisterMode() {
-
     if (selectedRole !== "student") {
         showMessage(
             "Registration is available only for students.",
@@ -142,7 +153,6 @@ function toggleRegisterMode() {
     }
 
     isRegisterMode = !isRegisterMode;
-
     updateAuthMode();
 }
 
@@ -152,52 +162,45 @@ function toggleRegisterMode() {
 // ==========================================
 
 function changeRole(role) {
-
     selectedRole = role;
-
     isRegisterMode = false;
 
     document.querySelectorAll(".role-option").forEach(button => {
-
         button.classList.toggle(
             "active",
             button.dataset.role === role
         );
-
     });
 
     updateAuthMode();
 
-    // Registration is only for students
-    document.getElementById("registerSection").classList.toggle(
-        "hidden",
-        role !== "student"
-    );
+    const registerSection = document.getElementById("registerSection");
+    if (registerSection) {
+        registerSection.classList.toggle("hidden", role !== "student");
+    }
 
     const note = document.getElementById("demoInfo");
-
-    if (role === "staff") {
-
-        note.innerHTML = `
-            <strong>Staff Demo Credentials</strong><br>
-            Email: staff@smartcanteen.com<br>
-            Password: Staff@123
-        `;
-
-    } else if (role === "admin") {
-
-        note.innerHTML = `
-            <strong>Admin Demo Credentials</strong><br>
-            Email: admin@smartcanteen.com<br>
-            Password: Admin@123
-        `;
-
-    } else {
-
-        note.innerHTML = `
-            <strong>Student Access</strong><br>
-            Create a student account to get started.
-        `;
+    if (note) {
+        if (role === "staff") {
+            note.innerHTML = `
+                <strong>Staff Demo Credentials</strong><br>
+                Email: staff@smartcanteen.com<br>
+                Password: Staff@123
+            `;
+        } else if (role === "admin") {
+            note.innerHTML = `
+                <strong>Admin Demo Credentials</strong><br>
+                Email: admin@smartcanteen.com<br>
+                Password: Admin@123
+            `;
+        } else {
+            note.innerHTML = `
+                <strong>Student Demo Credentials</strong><br>
+                Email: student@smartcanteen.com<br>
+                Password: Student@123<br>
+                <small style="color:#78716c;">(Or click Create Account to register your own profile)</small>
+            `;
+        }
     }
 }
 
@@ -207,12 +210,11 @@ function changeRole(role) {
 // ==========================================
 
 function registerStudent(name, email, password) {
-
     const users = getUsers();
 
     // Check duplicate email
     const existingUser = users.find(
-        user => user.email === email
+        user => user.email.toLowerCase() === email.toLowerCase()
     );
 
     if (existingUser) {
@@ -224,16 +226,16 @@ function registerStudent(name, email, password) {
     }
 
     // Validate name
-    if (name.length < 2) {
+    if (!name || name.trim().length < 2) {
         showMessage(
-            "Please enter a valid full name.",
+            "Please enter a valid full name (at least 2 characters).",
             "error"
         );
         return;
     }
 
     // Validate password
-    if (password.length < 6) {
+    if (!password || password.length < 6) {
         showMessage(
             "Password must contain at least 6 characters.",
             "error"
@@ -244,15 +246,14 @@ function registerStudent(name, email, password) {
     // Create new student
     const newStudent = {
         id: "STU" + Date.now(),
-        name: name,
-        email: email,
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
         password: password,
         role: "student",
         createdAt: new Date().toISOString()
     };
 
     users.push(newStudent);
-
     saveUsers(users);
 
     showMessage(
@@ -262,15 +263,12 @@ function registerStudent(name, email, password) {
 
     // Switch back to login mode
     setTimeout(() => {
-
         isRegisterMode = false;
-
         updateAuthMode();
-
-        document.getElementById("email").value = email;
-
-        document.getElementById("password").value = "";
-
+        const emailField = document.getElementById("email");
+        const passwordField = document.getElementById("password");
+        if (emailField) emailField.value = email;
+        if (passwordField) passwordField.value = "";
     }, 1000);
 }
 
@@ -280,26 +278,28 @@ function registerStudent(name, email, password) {
 // ==========================================
 
 function loginUser(email, password) {
-
     let user = null;
 
     if (selectedRole === "student") {
-
         const users = getUsers();
 
         user = users.find(
             item =>
-                item.email === email &&
+                item.email.toLowerCase() === email.toLowerCase() &&
                 item.password === password &&
                 item.role === "student"
         );
 
-    } else {
+        // Fallback check against DEMO_ACCOUNTS student
+        if (!user && email.toLowerCase() === DEMO_ACCOUNTS.student.email.toLowerCase() && password === DEMO_ACCOUNTS.student.password) {
+            user = DEMO_ACCOUNTS.student;
+        }
 
+    } else {
         const account = DEMO_ACCOUNTS[selectedRole];
 
         if (
-            email === account.email &&
+            email.toLowerCase() === account.email.toLowerCase() &&
             password === account.password
         ) {
             user = account;
@@ -341,10 +341,8 @@ function loginUser(email, password) {
     };
 
     setTimeout(() => {
-
-        window.location.href = dashboardPages[user.role];
-
-    }, 700);
+        window.location.href = dashboardPages[user.role] || "login.html";
+    }, 600);
 }
 
 
@@ -353,10 +351,9 @@ function loginUser(email, password) {
 // ==========================================
 
 function logoutUser() {
-
     localStorage.removeItem(SESSION_KEY);
-
-    window.location.href = "login.html";
+    // Replace window location so pressing back does not return
+    window.location.replace("login.html");
 }
 
 
@@ -365,24 +362,62 @@ function logoutUser() {
 // ==========================================
 
 function getCurrentUser() {
-
-    return JSON.parse(
-        localStorage.getItem(SESSION_KEY)
-    );
+    if (typeof readJSON === "function") {
+        return readJSON(SESSION_KEY, null);
+    }
+    try {
+        return JSON.parse(localStorage.getItem(SESSION_KEY));
+    } catch (e) {
+        return null;
+    }
 }
 
 
+// ==========================================
+// 11. ROLE GUARD HELPER
+// ==========================================
+
+function enforceRole(expectedRole) {
+    const user = getCurrentUser();
+
+    if (!user || !user.role) {
+        window.location.replace("login.html");
+        return null;
+    }
+
+    if (user.role !== expectedRole) {
+        const routes = {
+            student: "student.html",
+            staff: "staff.html",
+            admin: "admin.html"
+        };
+        const target = routes[user.role] || "login.html";
+        window.location.replace(target);
+        return null;
+    }
+
+    // Guard against browser back button after logout
+    window.addEventListener("pageshow", function(event) {
+        if (event.persisted) {
+            const recheck = getCurrentUser();
+            if (!recheck || recheck.role !== expectedRole) {
+                window.location.replace("login.html");
+            }
+        }
+    });
+
+    return user;
+}
+
 
 // ==========================================
-// 11. AUTHENTICATION FORM SUBMISSION
+// 12. AUTHENTICATION FORM SETUP (LOGIN PAGE)
 // ==========================================
 
 const authForm = document.getElementById("authForm");
 
 if (authForm) {
-
     authForm.addEventListener("submit", function(event) {
-
         event.preventDefault();
 
         const email = document.getElementById("email")
@@ -397,53 +432,36 @@ if (authForm) {
         }
 
         if (isRegisterMode) {
-
             const name = document.getElementById("name")
                 .value.trim();
 
             registerStudent(name, email, password);
-
         } else {
-
             loginUser(email, password);
-
         }
-
     });
 
-
-    // ==========================================
-    // 12. INITIALIZE LOGIN PAGE
-    // ==========================================
-
     document.addEventListener("DOMContentLoaded", function() {
-
         document.querySelectorAll(".role-option").forEach(button => {
-
             button.addEventListener("click", function() {
                 changeRole(this.dataset.role);
             });
-
         });
 
-        changeRole("student");
+        const toggleBtn = document.getElementById("registerToggle");
+        if (toggleBtn) {
+            toggleBtn.addEventListener("click", toggleRegisterMode);
+        }
+
+        // Check URL params for role selection (?role=staff or ?role=admin)
+        const params = new URLSearchParams(window.location.search);
+        const queryRole = params.get("role");
+        if (queryRole && ["student", "staff", "admin"].includes(queryRole)) {
+            changeRole(queryRole);
+        } else {
+            changeRole("student");
+        }
 
         console.log("Smart Canteen Authentication Ready!");
-
     });
-
 }
-
-
-    // Registration toggle
-    document.getElementById("registerToggle").addEventListener(
-        "click",
-        toggleRegisterMode
-    );
-
-    // Initialize default role
-    changeRole("student");
-
-    console.log("Smart Canteen Authentication Ready!");
-
-

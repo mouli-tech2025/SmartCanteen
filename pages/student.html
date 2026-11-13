@@ -186,7 +186,7 @@
 
                 </div>
 
-                <div class="category-filters">
+                <div class="category-filters" id="categoryFilters">
                     <button class="category-btn active" data-category="All">All Items</button>
                     <button class="category-btn" data-category="Breakfast">🌅 Breakfast</button>
                     <button class="category-btn" data-category="Lunch">🍛 Lunch</button>
@@ -229,7 +229,10 @@
                     <h2>My Cart 🛒</h2>
                     <p id="cartItemCount">0 items</p>
                 </div>
-                <span class="cart-count" id="cartBadge">0</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button type="button" onclick="clearCart()" style="border:none; background:none; color:#78716c; font-size:11px; cursor:pointer; text-decoration:underline;" title="Clear all items">Clear</button>
+                    <span class="cart-count" id="cartBadge">0</span>
+                </div>
             </div>
 
             <div id="cartItems" class="cart-items">

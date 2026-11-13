@@ -277,3 +277,85 @@
     color: #9a6500;
 }
 
+/* ==========================================
+   ADDITIVE ADMIN STYLES & FORM CONTROLS
+========================================== */
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.admin-form-grid .form-group input,
+.admin-form-grid .form-group select,
+.admin-panel textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.admin-form-grid .form-group input:focus,
+.admin-form-grid .form-group select:focus,
+.admin-panel textarea:focus {
+    border-color: #f97316;
+}
+
+.admin-form-grid .form-group label,
+.admin-panel label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.admin-reset-button {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    padding: 9px 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.admin-reset-button:hover {
+    background: #fecaca;
+}
+
+.admin-cancel-button {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 11px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.admin-cancel-button:hover {
+    background: #e2e8f0;
+}
+
+/* Responsive Additions (Preserving Desktop Layout) */
+@media (max-width: 600px) {
+    .admin-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-menu-actions {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .admin-reset-button {
+        width: 100%;
+    }
+}
+
