@@ -7,6 +7,12 @@
 
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/admin.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body class="admin-body">
@@ -17,21 +23,47 @@
         <aside class="admin-sidebar">
 
             <div class="admin-brand">
-                <h2>Smart<span>Canteen</span></h2>
-                <p>Admin Panel</p>
+                <div class="admin-brand-icon">
+                    <i data-lucide="utensils"></i>
+                </div>
+                <div>
+                    <h2>Smart<span>Canteen</span></h2>
+                    <p>Admin Panel</p>
+                </div>
             </div>
 
+            <p class="admin-menu-label">MANAGEMENT</p>
+
             <nav class="admin-nav">
-                <a href="#overview" class="active">Dashboard</a>
-                <a href="#orders">Order Management</a>
-                <a href="#menu">Menu Management</a>
-                <a href="#categories">Manage Categories</a>
-                <a href="#users">User Management</a>
-                <a href="#reports">Reports</a>
+                <a href="#overview" class="active">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#orders">
+                    <i data-lucide="package"></i>
+                    <span>Order Management</span>
+                </a>
+                <a href="#menu">
+                    <i data-lucide="utensils"></i>
+                    <span>Menu Management</span>
+                </a>
+                <a href="#categories">
+                    <i data-lucide="tags"></i>
+                    <span>Manage Categories</span>
+                </a>
+                <a href="#users">
+                    <i data-lucide="users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#reports">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Reports</span>
+                </a>
             </nav>
 
             <button class="admin-logout" onclick="logoutUser()">
-                Logout
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
             </button>
 
         </aside>
@@ -41,15 +73,18 @@
 
             <header class="admin-header">
                 <div>
+                    <span class="admin-eyebrow">ADMINISTRATION</span>
                     <h1>Admin Dashboard</h1>
                     <p>Manage your canteen operations</p>
                 </div>
 
                 <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                     <button type="button" class="admin-reset-button" id="resetDemoBtn" onclick="handleResetDemoData()">
-                        ↺ Reset Demo Data
+                        <i data-lucide="rotate-ccw" style="width:14px; height:14px;"></i>
+                        Reset Demo Data
                     </button>
                     <div class="admin-profile">
+                        <i data-lucide="user-circle" style="width:18px; height:18px; color:#F97316;"></i>
                         <span id="adminName">Administrator</span>
                     </div>
                 </div>
@@ -66,23 +101,43 @@
                 <div class="admin-stats">
 
                     <div class="admin-stat-card">
-                        <p>Total Orders</p>
-                        <h2 id="totalOrders">0</h2>
+                        <div class="admin-stat-icon orange">
+                            <i data-lucide="package"></i>
+                        </div>
+                        <div>
+                            <p>Total Orders</p>
+                            <h2 id="totalOrders">0</h2>
+                        </div>
                     </div>
 
                     <div class="admin-stat-card">
-                        <p>Total Revenue (Completed)</p>
-                        <h2 id="totalRevenue">₹0</h2>
+                        <div class="admin-stat-icon green">
+                            <i data-lucide="indian-rupee"></i>
+                        </div>
+                        <div>
+                            <p>Total Revenue (Completed)</p>
+                            <h2 id="totalRevenue">₹0</h2>
+                        </div>
                     </div>
 
                     <div class="admin-stat-card">
-                        <p>Total Menu Items</p>
-                        <h2 id="totalMenuItems">0</h2>
+                        <div class="admin-stat-icon blue">
+                            <i data-lucide="utensils"></i>
+                        </div>
+                        <div>
+                            <p>Total Menu Items</p>
+                            <h2 id="totalMenuItems">0</h2>
+                        </div>
                     </div>
 
                     <div class="admin-stat-card">
-                        <p>Registered Students & Staff</p>
-                        <h2 id="totalUsers">0</h2>
+                        <div class="admin-stat-icon purple">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div>
+                            <p>Registered Students & Staff</p>
+                            <h2 id="totalUsers">0</h2>
+                        </div>
                     </div>
 
                 </div>
@@ -202,7 +257,8 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
                         <h3 style="margin:0;">Available Menu Items</h3>
                         <button type="button" class="admin-add-button" onclick="openAddFoodForm()">
-                            + Add New Food Item
+                            <i data-lucide="plus" style="width:16px; height:16px;"></i>
+                            Add New Food Item
                         </button>
                     </div>
 
@@ -226,7 +282,10 @@
 
                     <form id="addCategoryForm" onsubmit="handleAddCategory(event)" style="display:flex; gap:10px; max-width:500px; margin-bottom:20px;">
                         <input type="text" id="newCategoryInput" placeholder="Category name (e.g. Desserts)" style="flex:1; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px;" required>
-                        <button type="submit" class="admin-add-button" style="background:#f97316;">+ Add Category</button>
+                        <button type="submit" class="admin-add-button" style="background:#f97316;">
+                            <i data-lucide="plus" style="width:16px; height:16px;"></i>
+                            Add Category
+                        </button>
                     </form>
 
                     <div id="categoryMessageBox" style="display:none; padding:10px; border-radius:8px; font-size:13px; margin-bottom:15px;"></div>

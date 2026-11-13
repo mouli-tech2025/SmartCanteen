@@ -1,5 +1,6 @@
 /* ==========================================
    SMART CANTEEN - STUDENT MODULE
+   Theme: Modern Premium Food-Tech
 ========================================== */
 
 // ==========================================
@@ -47,10 +48,9 @@ document.addEventListener("DOMContentLoaded", function() {
     const dateElem = document.getElementById("currentDate");
     if (dateElem) {
         dateElem.textContent = new Date().toLocaleDateString("en-IN", {
-            weekday: "long",
+            weekday: "short",
             day: "numeric",
-            month: "short",
-            year: "numeric"
+            month: "short"
         });
     }
 
@@ -150,18 +150,32 @@ function renderFoodCard(food) {
     const safeName = escapeHTML(food.name);
     const safeDesc = escapeHTML(food.description);
     const safeCat = escapeHTML(food.category);
-    const safeImg = food.image || "https://placehold.co/600x400/fff1e5/f97316?text=Food";
+    const safeImg = food.image || DEFAULT_FALLBACK_IMAGE;
+
+    const popularBadgeHTML = food.popular ? `
+        <div class="popular-badge">
+            ${getLucideIcon("flame", 12, 2.5)}
+            <span>Popular</span>
+        </div>
+    ` : "";
+
+    const addBtnContent = food.available
+        ? `${getLucideIcon("plus", 14, 2.5)} Add`
+        : "Unavailable";
 
     return `
         <article class="food-card ${!food.available ? "food-unavailable" : ""}">
 
-            <img
-                class="food-image"
-                src="${safeImg}"
-                alt="${safeName}"
-                loading="lazy"
-                onerror="this.onerror=null;this.src='https://placehold.co/600x400/fff1e5/f97316?text=Food'"
-            >
+            <div class="food-image-wrap">
+                <img
+                    class="food-image"
+                    src="${safeImg}"
+                    alt="${safeName}"
+                    loading="lazy"
+                    onerror="this.onerror=null;this.src='${DEFAULT_FALLBACK_IMAGE}'"
+                >
+                ${popularBadgeHTML}
+            </div>
 
             <div class="food-info">
 
@@ -182,11 +196,12 @@ function renderFoodCard(food) {
                     </span>
 
                     <button
+                        type="button"
                         class="add-cart-btn"
                         onclick="addToCart(${food.id})"
                         ${!food.available ? "disabled" : ""}
                     >
-                        ${food.available ? "+ Add" : "Unavailable"}
+                        ${addBtnContent}
                     </button>
 
                 </div>
@@ -216,13 +231,13 @@ function renderPopularFood() {
     container.innerHTML =
         popularItems.length
             ? popularItems.map(renderFoodCard).join("")
-            : `<p style="color:#78716c; padding:15px;">No popular food available currently.</p>`;
+            : `<p style="color:#777777; padding:15px; grid-column:1/-1;">No popular food available currently.</p>`;
 
 }
 
 
 // ==========================================
-// 7. DYNAMIC CATEGORY BUTTONS & FILTERS
+// 7. DYNAMIC CATEGORY BUTTONS & FILTERS WITH ICONS
 // ==========================================
 
 function renderCategoryButtons() {
@@ -237,10 +252,11 @@ function renderCategoryButtons() {
     }
 
     const allButtonsHTML = [
-        `<button type="button" class="category-btn ${selectedCategory === "All" ? "active" : ""}" data-category="All">All Items</button>`,
+        `<button type="button" class="category-btn ${selectedCategory === "All" ? "active" : ""}" data-category="All">${getLucideIcon("utensils", 15)} All Items</button>`,
         ...categories.map(cat => {
             const isActive = selectedCategory === cat ? "active" : "";
-            return `<button type="button" class="category-btn ${isActive}" data-category="${escapeHTML(cat)}">${escapeHTML(cat)}</button>`;
+            const iconName = typeof getCategoryIcon === "function" ? getCategoryIcon(cat) : "tag";
+            return `<button type="button" class="category-btn ${isActive}" data-category="${escapeHTML(cat)}">${getLucideIcon(iconName, 15)} ${escapeHTML(cat)}</button>`;
         })
     ].join("");
 
@@ -288,7 +304,6 @@ function setupMenuFilters() {
 
 function renderMenu() {
 
-    // Show all items, but mark unavailable
     let menu = getMenu();
 
     // 1. Category Filter
@@ -329,9 +344,9 @@ function renderMenu() {
     } else {
         grid.innerHTML = `
             <div class="no-orders" style="grid-column: 1 / -1; text-align: center; padding: 45px 20px;">
-                <div style="font-size: 48px; margin-bottom: 12px;">🍽️</div>
-                <h3 style="margin-bottom: 8px;">No food found</h3>
-                <p style="color: #78716c; font-size: 14px;">Try searching for something else or select another category filter.</p>
+                <img src="../assets/images/illustrations/no-orders.svg" alt="No Food Found" style="width:130px; margin-bottom:14px;">
+                <h3 style="margin-bottom: 6px; font-size:16px;">No food items found</h3>
+                <p style="color: #777777; font-size: 13px; margin:0;">Try searching for another keyword or select a different category filter.</p>
             </div>
         `;
     }
@@ -480,9 +495,9 @@ function renderCart() {
 
         cartContainer.innerHTML = `
             <div class="empty-cart">
-                <span>🛒</span>
+                <img src="../assets/images/illustrations/empty-cart.svg" alt="Empty Cart" style="width:130px; margin-bottom:12px;">
                 <h3>Your cart is empty</h3>
-                <p>Add some delicious food to get started.</p>
+                <p>Select delicious meals from the campus menu to get started.</p>
             </div>
         `;
 
@@ -493,7 +508,7 @@ function renderCart() {
             <div class="cart-item">
 
                 <img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.name)}"
-                    onerror="this.onerror=null;this.src='https://placehold.co/100x100/fff1e5/f97316?text=Food'">
+                    onerror="this.onerror=null;this.src='${DEFAULT_FALLBACK_IMAGE}'">
 
                 <div class="cart-item-info">
 
@@ -504,22 +519,22 @@ function renderCart() {
                     <div class="quantity-controls">
 
                         <button type="button" onclick="changeQuantity(${item.id}, -1)" aria-label="Decrease quantity">
-                            −
+                            ${getLucideIcon("minus", 12, 2.5)}
                         </button>
 
                         <span>${item.quantity}</span>
 
                         <button type="button" onclick="changeQuantity(${item.id}, 1)" aria-label="Increase quantity">
-                            +
-                        </button>
-
-                        <button type="button" onclick="removeFromCart(${item.id})" style="margin-left: 8px; border:none; background:none; color:#dc2626; cursor:pointer; font-size:12px;" title="Remove item">
-                            ✕
+                            ${getLucideIcon("plus", 12, 2.5)}
                         </button>
 
                     </div>
 
                 </div>
+
+                <button type="button" class="cart-item-remove-btn" onclick="removeFromCart(${item.id})" title="Remove item">
+                    ${getLucideIcon("trash-2", 14)}
+                </button>
 
             </div>
 
@@ -555,7 +570,6 @@ function checkout() {
         return;
     }
 
-    // Verify current food availability and prices in LocalStorage
     const latestMenu = getMenu();
 
     for (const item of cart) {
@@ -624,10 +638,10 @@ function showOrderConfirmation(order) {
     const detailsElem = document.getElementById("modalOrderDetails");
     if (detailsElem) {
         detailsElem.innerHTML = `
-            <p>Order ID: <strong>${escapeHTML(order.id)}</strong></p>
-            <p>Total Amount: <strong>₹${Number(order.total).toFixed(2)}</strong></p>
-            <p>Status: <span class="order-status status-pending">Pending</span></p>
-            <p>Payment: Pay at Counter</p>
+            <p style="margin:4px 0;">Order ID: <strong>${escapeHTML(order.id)}</strong></p>
+            <p style="margin:4px 0;">Total Amount: <strong>₹${Number(order.total).toFixed(2)}</strong></p>
+            <p style="margin:4px 0;">Status: <span class="order-status status-pending">${getLucideIcon("clock", 12)} Pending</span></p>
+            <p style="margin:4px 0;">Payment: Pay at Counter</p>
         `;
     }
 
@@ -729,8 +743,8 @@ function renderRecentOrders() {
 
     if (!orders.length) {
         container.innerHTML = `
-            <div class="no-orders">
-                <p>You haven't placed any orders yet.</p>
+            <div class="no-orders" style="text-align:center; padding:30px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:14px;">
+                <p style="color:#777777; font-size:13px; margin:0;">You haven't placed any orders yet.</p>
             </div>
         `;
         return;
@@ -777,34 +791,33 @@ function renderOrders() {
 
     if (!orders.length) {
         container.innerHTML = `
-            <div class="no-orders">
-                <div style="font-size:45px;">📦</div>
-                <h3>No orders yet</h3>
-                <p>Your food orders will appear here.</p>
+            <div class="no-orders" style="text-align:center; padding:50px 20px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px;">
+                <img src="../assets/images/illustrations/no-orders.svg" alt="No Orders" style="width:140px; margin-bottom:14px;">
+                <h3 style="margin-bottom:6px; font-size:17px; color:#252525;">No orders placed yet</h3>
+                <p style="color:#777777; font-size:13px; margin:0;">Explore the campus menu to place your first order.</p>
             </div>
         `;
         return;
+
     }
 
     container.innerHTML = orders.map(order => {
 
         const isRejected = order.status === "Rejected";
-
-        // Progress bar step calculation
         const steps = ["Pending", "Preparing", "Ready", "Completed"];
         const currentStepIndex = steps.indexOf(order.status);
 
         const trackerHTML = !isRejected ? `
-            <div class="order-tracker" style="display:flex; justify-content:space-between; margin:15px 0; position:relative; font-size:11px;">
+            <div class="order-tracker" style="display:flex; justify-content:space-between; margin:16px 0; position:relative; font-size:11px; padding:10px 0;">
                 ${steps.map((step, idx) => {
                     const isPassed = currentStepIndex >= idx;
                     const isCurrent = currentStepIndex === idx;
                     return `
                         <div style="text-align:center; flex:1; position:relative;">
-                            <div style="width:20px; height:20px; border-radius:50%; background:${isPassed ? '#16a34a' : '#e7e5e4'}; color:white; display:inline-flex; align-items:center; justify-content:center; font-weight:bold; margin-bottom:4px;">
+                            <div style="width:22px; height:22px; border-radius:50%; background:${isPassed ? '#16A36A' : '#E5E7EB'}; color:white; display:inline-flex; align-items:center; justify-content:center; font-weight:700; font-size:10px; margin-bottom:4px; box-shadow:${isCurrent ? '0 0 0 4px rgba(22, 163, 106, 0.2)' : 'none'};">
                                 ${isPassed ? "✓" : idx + 1}
                             </div>
-                            <div style="color:${isCurrent ? '#f97316' : isPassed ? '#16a34a' : '#a8a29e'}; font-weight:${isCurrent ? '700' : '500'};">
+                            <div style="color:${isCurrent ? '#F97316' : isPassed ? '#16A36A' : '#777777'}; font-weight:${isCurrent ? '800' : '600'};">
                                 ${step}
                             </div>
                         </div>
@@ -812,8 +825,9 @@ function renderOrders() {
                 }).join("")}
             </div>
         ` : `
-            <div style="background:#fee2e2; color:#dc2626; padding:10px; border-radius:8px; margin:12px 0; font-size:12px; font-weight:600;">
-                ✕ This order was rejected by the kitchen. Please contact canteen staff.
+            <div style="background:#FEE2E2; color:#DC2626; border:1px solid #FECACA; padding:10px 14px; border-radius:8px; margin:14px 0; font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:8px;">
+                ${getLucideIcon("x-circle", 16)}
+                This order was rejected by the kitchen counter. Please contact canteen staff.
             </div>
         `;
 
@@ -824,8 +838,7 @@ function renderOrders() {
 
                     <div>
                         <h3>${escapeHTML(order.token)}</h3>
-                        <p>Order ID: ${escapeHTML(order.id)}</p>
-                        <p>${new Date(order.createdAt).toLocaleString("en-IN")}</p>
+                        <p style="font-size:12px; color:#777777;">Order ID: ${escapeHTML(order.id)} &bull; ${new Date(order.createdAt).toLocaleString("en-IN")}</p>
                     </div>
 
                     <span class="order-status status-${getStatusClass(order.status)}">
@@ -838,13 +851,13 @@ function renderOrders() {
 
                 <div class="order-items-text">
                     ${order.items.map(item =>
-                        `${escapeHTML(item.name)} × ${Number(item.quantity)} (₹${(item.price * item.quantity).toFixed(2)})`
+                        `<strong>${Number(item.quantity)}x</strong> ${escapeHTML(item.name)} &bull; ₹${(item.price * item.quantity).toFixed(2)}`
                     ).join("<br>")}
                 </div>
 
                 <div class="order-card-bottom">
 
-                    <span>Digital Token: <strong>${escapeHTML(order.token)}</strong></span>
+                    <span>Pickup Token: <strong style="color:#F97316;">${escapeHTML(order.token)}</strong></span>
 
                     <strong>Total: ₹${Number(order.total).toFixed(2)}</strong>
 

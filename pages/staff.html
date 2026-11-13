@@ -9,19 +9,30 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/staff.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body class="staff-body">
 
 <header class="staff-navbar">
     <a href="../index.html" class="staff-brand">
-        <span>🍽️</span> Smart<span>Canteen</span>
+        <span class="brand-icon-wrap"><i data-lucide="utensils"></i></span>
+        <span>Smart<span>Canteen</span></span>
     </a>
 
     <div class="staff-nav-right">
-        <span class="staff-role">👨‍🍳 Kitchen Staff</span>
-        <button class="staff-logout" onclick="logoutUser()">↪ Logout</button>
+        <span class="staff-role">
+            <i data-lucide="chef-hat" style="width:16px; height:16px;"></i>
+            Kitchen Staff
+        </span>
+        <button class="staff-logout" onclick="logoutUser()">
+            <i data-lucide="log-out" style="width:16px; height:16px;"></i>
+            <span>Logout</span>
+        </button>
     </div>
 </header>
 
@@ -31,7 +42,9 @@
     <aside class="staff-sidebar">
 
         <div class="staff-profile">
-            <div class="staff-avatar">👨‍🍳</div>
+            <div class="staff-avatar">
+                <i data-lucide="chef-hat"></i>
+            </div>
             <div>
                 <strong id="staffName">Kitchen Staff</strong>
                 <small>Staff Portal</small>
@@ -42,31 +55,36 @@
 
         <nav class="staff-navigation">
             <a href="#overview" class="staff-link active" data-section="overview">
-                📊 Dashboard
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
             </a>
 
             <a href="#incoming" class="staff-link" data-section="incoming">
-                📥 Incoming Orders
+                <i data-lucide="inbox"></i>
+                <span>Incoming Orders</span>
                 <span class="nav-count" id="incomingBadge">0</span>
             </a>
 
             <a href="#preparing" class="staff-link" data-section="preparing">
-                👨‍🍳 Preparing
+                <i data-lucide="flame"></i>
+                <span>Preparing</span>
             </a>
 
             <a href="#ready" class="staff-link" data-section="ready">
-                🔔 Ready for Pickup
+                <i data-lucide="bell"></i>
+                <span>Ready for Pickup</span>
             </a>
 
             <a href="#completed" class="staff-link" data-section="completed">
-                ✅ Completed
+                <i data-lucide="check-circle-2"></i>
+                <span>Completed</span>
             </a>
         </nav>
 
         <div class="staff-sidebar-bottom">
-            <span>💡</span>
+            <i data-lucide="flame"></i>
             <strong>Kitchen Reminder</strong>
-            <p>Keep orders updated so students can track their food.</p>
+            <p>Keep orders updated so students can track their food in real time.</p>
         </div>
 
     </aside>
@@ -81,8 +99,8 @@
             <div class="staff-heading">
                 <div>
                     <span class="staff-eyebrow">KITCHEN MANAGEMENT</span>
-                    <h1>Kitchen Dashboard 👋</h1>
-                    <p>Manage student orders and food preparation.</p>
+                    <h1>Kitchen Dashboard</h1>
+                    <p>Manage student orders and food preparation efficiently.</p>
                 </div>
 
                 <div class="staff-date" id="staffDate"></div>
@@ -91,7 +109,9 @@
             <div class="staff-stats">
 
                 <div class="staff-stat">
-                    <div class="staff-stat-icon orange">📦</div>
+                    <div class="staff-stat-icon orange">
+                        <i data-lucide="package"></i>
+                    </div>
                     <div>
                         <span>Total Orders</span>
                         <h2 id="staffTotal">0</h2>
@@ -99,7 +119,9 @@
                 </div>
 
                 <div class="staff-stat">
-                    <div class="staff-stat-icon blue">📥</div>
+                    <div class="staff-stat-icon blue">
+                        <i data-lucide="clock"></i>
+                    </div>
                     <div>
                         <span>Pending Orders</span>
                         <h2 id="staffPending">0</h2>
@@ -107,7 +129,9 @@
                 </div>
 
                 <div class="staff-stat">
-                    <div class="staff-stat-icon yellow">👨‍🍳</div>
+                    <div class="staff-stat-icon yellow">
+                        <i data-lucide="flame"></i>
+                    </div>
                     <div>
                         <span>Preparing</span>
                         <h2 id="staffPreparing">0</h2>
@@ -115,7 +139,9 @@
                 </div>
 
                 <div class="staff-stat">
-                    <div class="staff-stat-icon green">✅</div>
+                    <div class="staff-stat-icon green">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
                     <div>
                         <span>Completed</span>
                         <h2 id="staffCompleted">0</h2>
@@ -123,7 +149,9 @@
                 </div>
 
                 <div class="staff-stat">
-                    <div class="staff-stat-icon" style="background:#dcfce7; color:#16a34a;">🔔</div>
+                    <div class="staff-stat-icon emerald">
+                        <i data-lucide="bell"></i>
+                    </div>
                     <div>
                         <span>Ready</span>
                         <h2 id="staffReady">0</h2>
@@ -131,7 +159,9 @@
                 </div>
 
                 <div class="staff-stat">
-                    <div class="staff-stat-icon" style="background:#fee2e2; color:#dc2626;">✕</div>
+                    <div class="staff-stat-icon red">
+                        <i data-lucide="x-circle"></i>
+                    </div>
                     <div>
                         <span>Rejected</span>
                         <h2 id="staffRejected">0</h2>
@@ -162,7 +192,7 @@
             <div class="staff-heading">
                 <div>
                     <span class="staff-eyebrow">NEW REQUESTS</span>
-                    <h1>Incoming Orders 📥</h1>
+                    <h1>Incoming Orders</h1>
                     <p>Review and accept or reject student orders.</p>
                 </div>
             </div>
@@ -183,7 +213,7 @@
             <div class="staff-heading">
                 <div>
                     <span class="staff-eyebrow">KITCHEN WORKSPACE</span>
-                    <h1>Preparing Orders 👨‍🍳</h1>
+                    <h1>Preparing Orders</h1>
                     <p>Orders currently being prepared in the kitchen.</p>
                 </div>
             </div>
@@ -199,7 +229,7 @@
             <div class="staff-heading">
                 <div>
                     <span class="staff-eyebrow">PICKUP COUNTER</span>
-                    <h1>Ready for Pickup 🔔</h1>
+                    <h1>Ready for Pickup</h1>
                     <p>Food orders ready for student collection.</p>
                 </div>
             </div>
@@ -215,7 +245,7 @@
             <div class="staff-heading">
                 <div>
                     <span class="staff-eyebrow">ORDER HISTORY</span>
-                    <h1>Completed Orders ✅</h1>
+                    <h1>Completed Orders</h1>
                     <p>Successfully collected student orders.</p>
                 </div>
             </div>

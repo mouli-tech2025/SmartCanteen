@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180">
+  <defs>
+    <linearGradient id="step3Grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="90" r="75" fill="url(#step3Grad)"/>
+  <!-- Food tray / takeaway bag -->
+  <path d="M 80 75 L 88 135 C 89 138, 92 140, 95 140 L 145 140 C 148 140, 151 138, 152 135 L 160 75 Z" fill="#FFFFFF" stroke="#16A34A" stroke-width="2.5"/>
+  <!-- Bag handles -->
+  <path d="M 102 75 C 102 55, 138 55, 138 75" fill="none" stroke="#F97316" stroke-width="3" stroke-linecap="round"/>
+  <!-- Hot food badge / burger icon inside -->
+  <ellipse cx="120" cy="105" rx="18" ry="10" fill="#FED7AA"/>
+  <rect x="105" y="103" width="30" height="4" rx="2" fill="#16A34A"/>
+  <!-- Bell pickup notification badge -->
+  <circle cx="165" cy="55" r="18" fill="#F97316"/>
+  <path d="M 160 52 A 5 5 0 0 1 170 52 C 170 58, 172 60, 173 61 L 157 61 C 158 60, 160 58, 160 52 Z" fill="#FFFFFF"/>
+  <circle cx="165" cy="64" r="1.5" fill="#FFFFFF"/>
+</svg>
+

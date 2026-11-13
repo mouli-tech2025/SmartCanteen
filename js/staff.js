@@ -34,6 +34,11 @@ document.addEventListener("DOMContentLoaded", function() {
     setupStaffNavigation();
     renderStaffDashboard();
 
+    // Initialize Lucide icons for static HTML elements
+    if (typeof lucide !== "undefined" && lucide.createIcons) {
+        lucide.createIcons();
+    }
+
     // Listen to storage event for cross-tab sync
     window.addEventListener("storage", function(event) {
         if (!event.key || event.key === STORAGE_KEYS.ORDERS) {
@@ -213,6 +218,12 @@ function createStaffOrderCard(order) {
 
     `).join("");
 
+    // Lucide inline SVG helpers for action buttons
+    var checkSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    var bellSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>';
+    var xSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+    var userSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+    var mailSvg = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>';
 
     let actionButtons = "";
 
@@ -225,7 +236,7 @@ function createStaffOrderCard(order) {
                 class="staff-action-btn accept-btn"
                 onclick="updateOrderStatus('${order.id}', 'Preparing')"
             >
-                ✓ Accept & Prepare
+                ${checkSvg} Accept & Prepare
             </button>
 
             <button
@@ -233,7 +244,7 @@ function createStaffOrderCard(order) {
                 class="staff-action-btn reject-btn"
                 onclick="rejectOrder('${order.id}')"
             >
-                ✕ Reject
+                ${xSvg} Reject
             </button>
 
         `;
@@ -247,7 +258,7 @@ function createStaffOrderCard(order) {
                 class="staff-action-btn ready-btn"
                 onclick="updateOrderStatus('${order.id}', 'Ready')"
             >
-                🔔 Mark as Ready
+                ${bellSvg} Mark as Ready
             </button>
 
         `;
@@ -261,7 +272,7 @@ function createStaffOrderCard(order) {
                 class="staff-action-btn complete-btn"
                 onclick="updateOrderStatus('${order.id}', 'Completed')"
             >
-                ✓ Confirm Collection
+                ${checkSvg} Confirm Collection
             </button>
 
         `;
@@ -294,9 +305,9 @@ function createStaffOrderCard(order) {
 
             <div class="staff-student-info">
 
-                <strong>🎓 ${escapeHTML(order.studentName || "Student")}</strong>
+                <strong>${userSvg} ${escapeHTML(order.studentName || "Student")}</strong>
 
-                <p>✉ ${escapeHTML(order.studentEmail || "-")}</p>
+                <p>${mailSvg} ${escapeHTML(order.studentEmail || "-")}</p>
 
             </div>
 
@@ -341,11 +352,24 @@ function createStaffOrderCard(order) {
 
 function emptyStaffMessage(icon, title, description) {
 
+    // Use illustration images when available; fall back to icon
+    var illustrationMap = {
+        "kitchen": "../assets/images/illustrations/kitchen.svg",
+        "no-orders": "../assets/images/illustrations/no-orders.svg"
+    };
+
+    var imgHTML = "";
+    if (icon === "kitchen" || icon === "no-orders") {
+        imgHTML = '<img src="' + illustrationMap[icon] + '" alt="" class="staff-empty-img">';
+    } else {
+        imgHTML = '<span>' + icon + '</span>';
+    }
+
     return `
 
         <div class="staff-empty">
 
-            <span>${icon}</span>
+            ${imgHTML}
 
             <h3>${title}</h3>
 
@@ -390,7 +414,7 @@ function renderStaffOrders() {
             orders.length
                 ? orders.slice(0, 4).map(createStaffOrderCard).join("")
                 : emptyStaffMessage(
-                    "📦",
+                    "kitchen",
                     "No orders yet",
                     "Student orders will appear here."
                 );
@@ -404,7 +428,7 @@ function renderStaffOrders() {
             pending.length
                 ? pending.map(createStaffOrderCard).join("")
                 : emptyStaffMessage(
-                    "📥",
+                    "no-orders",
                     "No incoming orders",
                     "New student orders will appear here."
                 );
@@ -418,7 +442,7 @@ function renderStaffOrders() {
             preparing.length
                 ? preparing.map(createStaffOrderCard).join("")
                 : emptyStaffMessage(
-                    "👨‍🍳",
+                    "kitchen",
                     "No orders being prepared",
                     "Accepted orders will appear here."
                 );
@@ -432,7 +456,7 @@ function renderStaffOrders() {
             ready.length
                 ? ready.map(createStaffOrderCard).join("")
                 : emptyStaffMessage(
-                    "🔔",
+                    "no-orders",
                     "No ready orders",
                     "Orders ready for collection will appear here."
                 );
@@ -446,7 +470,7 @@ function renderStaffOrders() {
             completed.length
                 ? completed.map(createStaffOrderCard).join("")
                 : emptyStaffMessage(
-                    "✅",
+                    "no-orders",
                     "No completed orders",
                     "Collected orders will appear here."
                 );
@@ -532,6 +556,11 @@ function renderStaffDashboard() {
 
     renderStaffStats();
     renderStaffOrders();
+
+    // Initialize Lucide icons on dynamically generated content
+    if (typeof lucide !== "undefined" && lucide.createIcons) {
+        lucide.createIcons();
+    }
 
 }
 

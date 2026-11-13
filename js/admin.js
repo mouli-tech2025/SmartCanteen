@@ -84,6 +84,11 @@ document.addEventListener("DOMContentLoaded", function () {
     setupAdminNavigation();
     renderAdminDashboard();
 
+    // Initialize Lucide icons for static HTML elements
+    if (typeof lucide !== "undefined" && lucide.createIcons) {
+        lucide.createIcons();
+    }
+
     // Storage event for live cross-tab updates
     window.addEventListener("storage", function (event) {
         if (!event.key || [STORAGE_KEYS.ORDERS, STORAGE_KEYS.MENU, STORAGE_KEYS.CATEGORIES, STORAGE_KEYS.USERS].includes(event.key)) {
@@ -179,6 +184,11 @@ function renderAdminDashboard() {
     renderAdminCategories();
     renderAdminUsers(users);
     renderReportsBreakdown(orders);
+
+    // Reinitialize Lucide icons on dynamically generated content
+    if (typeof lucide !== "undefined" && lucide.createIcons) {
+        lucide.createIcons();
+    }
 
 }
 
