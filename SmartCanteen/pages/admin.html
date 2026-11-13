@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Smart Canteen</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="admin-body">
+
+    <div class="admin-layout">
+
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+
+            <div class="admin-brand">
+                <div class="admin-brand-icon">
+                    <i data-lucide="utensils"></i>
+                </div>
+                <div>
+                    <h2>Smart<span>Canteen</span></h2>
+                    <p>Admin Panel</p>
+                </div>
+            </div>
+
+            <p class="admin-menu-label">MANAGEMENT</p>
+
+            <nav class="admin-nav">
+                <a href="#overview" class="active">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#orders">
+                    <i data-lucide="package"></i>
+                    <span>Order Management</span>
+                </a>
+                <a href="#menu">
+                    <i data-lucide="utensils"></i>
+                    <span>Menu Management</span>
+                </a>
+                <a href="#categories">
+                    <i data-lucide="tags"></i>
+                    <span>Manage Categories</span>
+                </a>
+                <a href="#users">
+                    <i data-lucide="users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#reports">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+
+            <button class="admin-logout" onclick="logoutUser()">
+                <i data-lucide="log-out"></i>
+                <span>Logout</span>
+            </button>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+
+            <header class="admin-header">
+                <div>
+                    <span class="admin-eyebrow">ADMINISTRATION</span>
+                    <h1>Admin Dashboard</h1>
+                    <p>Manage your canteen operations</p>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                    <button type="button" class="admin-reset-button" id="resetDemoBtn" onclick="handleResetDemoData()">
+                        <i data-lucide="rotate-ccw" style="width:14px; height:14px;"></i>
+                        Reset Demo Data
+                    </button>
+                    <div class="admin-profile">
+                        <i data-lucide="user-circle" style="width:18px; height:18px; color:#F97316;"></i>
+                        <span id="adminName">Administrator</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Global Feedback Message -->
+            <div id="adminMessageBox" class="admin-message-box" style="display:none;"></div>
+
+            <!-- Overview -->
+            <section id="overview" class="admin-section">
+
+                <h2>Overview</h2>
+
+                <div class="admin-stats">
+
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon orange">
+                            <i data-lucide="package"></i>
+                        </div>
+                        <div>
+                            <p>Total Orders</p>
+                            <h2 id="totalOrders">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon green">
+                            <i data-lucide="indian-rupee"></i>
+                        </div>
+                        <div>
+                            <p>Total Revenue (Completed)</p>
+                            <h2 id="totalRevenue">₹0</h2>
+                        </div>
+                    </div>
+
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon blue">
+                            <i data-lucide="utensils"></i>
+                        </div>
+                        <div>
+                            <p>Total Menu Items</p>
+                            <h2 id="totalMenuItems">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon purple">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div>
+                            <p>Registered Students & Staff</p>
+                            <h2 id="totalUsers">0</h2>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="admin-panel">
+                    <h3>Recent Orders</h3>
+
+                    <div class="admin-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Token</th>
+                                    <th>Order ID</th>
+                                    <th>Student</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="recentOrders">
+                                <tr>
+                                    <td colspan="5">Loading orders...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Orders -->
+            <section id="orders" class="admin-section">
+
+                <h2>Order Management</h2>
+
+                <div class="admin-panel">
+                    <div class="admin-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Token</th>
+                                    <th>Order ID</th>
+                                    <th>Student</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="allOrders">
+                                <tr>
+                                    <td colspan="7">Loading orders...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Menu Management -->
+            <section id="menu" class="admin-section">
+
+                <h2>Menu Management</h2>
+
+                <!-- Add/Edit Food Form Panel -->
+                <div class="admin-panel" id="foodFormPanel" style="display:none; margin-bottom:25px;">
+                    <h3 id="foodFormTitle">Add New Food Item</h3>
+                    <form id="adminFoodForm" onsubmit="handleFoodFormSubmit(event)">
+                        <input type="hidden" id="foodFormId" value="">
+
+                        <div class="admin-form-grid">
+                            <div class="form-group">
+                                <label for="foodNameInput">Food Name *</label>
+                                <input type="text" id="foodNameInput" placeholder="e.g. Crispy Paneer Wrap" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="foodCategorySelect">Category *</label>
+                                <select id="foodCategorySelect" required>
+                                    <!-- Populated dynamically from getCategories() -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="foodPriceInput">Price (₹) *</label>
+                                <input type="number" id="foodPriceInput" min="1" step="0.5" placeholder="e.g. 60" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="foodImageInput">Image URL (Optional)</label>
+                                <input type="url" id="foodImageInput" placeholder="https://images.unsplash.com/...">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top:10px;">
+                            <label for="foodDescInput">Description *</label>
+                            <textarea id="foodDescInput" rows="2" placeholder="Brief food description..." required></textarea>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:8px; margin: 15px 0;">
+                            <input type="checkbox" id="foodAvailableInput" checked>
+                            <label for="foodAvailableInput" style="font-size:14px; font-weight:600; cursor:pointer;">Item is Available for Ordering</label>
+                        </div>
+
+                        <div id="foodFormError" style="display:none; color:#dc2626; font-size:13px; margin-bottom:12px;"></div>
+
+                        <div style="display:flex; gap:10px;">
+                            <button type="submit" class="admin-add-button" style="background:#f97316;">Save Food Item</button>
+                            <button type="button" class="admin-cancel-button" onclick="closeFoodForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="admin-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                        <h3 style="margin:0;">Available Menu Items</h3>
+                        <button type="button" class="admin-add-button" onclick="openAddFoodForm()">
+                            <i data-lucide="plus" style="width:16px; height:16px;"></i>
+                            Add New Food Item
+                        </button>
+                    </div>
+
+                    <div id="adminMenuList">
+                        Loading menu...
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Category Management (NEW FEATURE) -->
+            <section id="categories" class="admin-section">
+
+                <h2>Manage Categories</h2>
+
+                <div class="admin-panel">
+                    <h3>Add New Category</h3>
+                    <p style="color:#78716c; font-size:13px; margin-bottom:15px;">
+                        Categories organize the canteen menu for students. Deleting a category is protected if any food item currently belongs to it.
+                    </p>
+
+                    <form id="addCategoryForm" onsubmit="handleAddCategory(event)" style="display:flex; gap:10px; max-width:500px; margin-bottom:20px;">
+                        <input type="text" id="newCategoryInput" placeholder="Category name (e.g. Desserts)" style="flex:1; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px;" required>
+                        <button type="submit" class="admin-add-button" style="background:#f97316;">
+                            <i data-lucide="plus" style="width:16px; height:16px;"></i>
+                            Add Category
+                        </button>
+                    </form>
+
+                    <div id="categoryMessageBox" style="display:none; padding:10px; border-radius:8px; font-size:13px; margin-bottom:15px;"></div>
+
+                    <h3 style="margin-top:25px; margin-bottom:15px;">Current Menu Categories</h3>
+                    <div id="adminCategoryList">
+                        Loading categories...
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- User Management -->
+            <section id="users" class="admin-section">
+
+                <h2>User Management</h2>
+
+                <div class="admin-panel">
+                    <h3>Registered Students & Staff</h3>
+
+                    <div class="admin-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="adminUsers">
+                                <tr>
+                                    <td colspan="3">Loading users...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Reports -->
+            <section id="reports" class="admin-section">
+
+                <h2>Sales and Order Reports</h2>
+
+                <div class="admin-panel" style="margin-bottom:20px;">
+                    <h3>Sales Summary</h3>
+
+                    <div class="admin-stats" style="margin-bottom:15px;">
+                        <div class="admin-stat-card">
+                            <p>Total Revenue (Completed)</p>
+                            <h2 id="reportRevenue" style="color:#16a34a;">₹0</h2>
+                        </div>
+                        <div class="admin-stat-card">
+                            <p>Completed Orders</p>
+                            <h2 id="reportCompleted">0</h2>
+                        </div>
+                        <div class="admin-stat-card">
+                            <p>Pending / Active</p>
+                            <h2 id="reportPending">0</h2>
+                        </div>
+                        <div class="admin-stat-card">
+                            <p>Total All Orders</p>
+                            <h2 id="reportOrders">0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Breakdown -->
+                <div class="admin-panel" style="margin-bottom:20px;">
+                    <h3>Orders by Status</h3>
+                    <div id="reportStatusBars" style="display:flex; flex-direction:column; gap:12px; margin-top:15px;">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Top Selling Items -->
+                <div class="admin-panel">
+                    <h3>Top-Selling Food Items (Completed Orders)</h3>
+                    <div class="admin-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Food Item</th>
+                                    <th>Category</th>
+                                    <th>Units Sold</th>
+                                    <th>Total Generated</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTopItems">
+                                <tr>
+                                    <td colspan="4">No completed orders yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+
+</body>
+</html>

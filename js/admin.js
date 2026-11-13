@@ -34,6 +34,26 @@ function getUsers() {
         localStorage.getItem(STORAGE_KEYS.USERS)
     ) || [];
 }
+let adminUsersCache = [];
+let adminUsersError = "";
+
+async function loadAdminUsers() {
+    const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("id, full_name, email, role")
+        .in("role", ["student", "staff"])
+        .order("full_name", { ascending: true });
+
+if (error) {
+    console.error("SUPABASE USERS ERROR:", error);
+    throw error;
+}
+
+console.log("SUPABASE USERS DATA:", data);
+
+    adminUsersCache = data || [];
+    adminUsersError = "";
+}
 
 function getOrderStatusClass(status) {
     return String(status || "").toLowerCase().replace(/\s+/g, "-");
@@ -70,9 +90,15 @@ function showAdminMessage(text, isError = false) {
 // 3. INITIALIZE DASHBOARD
 // ==========================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
 
     if (!currentAdmin || currentAdmin.role !== "admin") {
+        return;
+    }
+    const menuResult = await loadMenuData();
+
+    if (!menuResult.ok) {
+        showAdminMessage("Unable to load menu data from Supabase.", true);
         return;
     }
 
@@ -80,8 +106,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (adminNameElem) {
         adminNameElem.textContent = currentAdmin.name || "Administrator";
     }
-
     setupAdminNavigation();
+
+    try {
+        await loadAdminUsers();
+    } catch (error) {
+        console.error("Could not load users:", error);
+        adminUsersError = error.message || "Unknown error";
+        showAdminMessage("Could not load users: " + adminUsersError, true);
+    }
+
     renderAdminDashboard();
 
     // Initialize Lucide icons for static HTML elements
@@ -97,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Refresh data periodically every 3 seconds (skip if form is active)
-    setInterval(function() {
+    setInterval(function () {
         const formPanel = document.getElementById("foodFormPanel");
         if (!formPanel || formPanel.style.display === "none") {
             renderAdminDashboard();
@@ -136,7 +170,7 @@ function renderAdminDashboard() {
 
     const orders = getOrders();
     const menu = getMenu();
-    const users = getUsers();
+    const users = adminUsersCache;
 
     const completedOrders = orders.filter(
         order => order.status === "Completed"
@@ -402,7 +436,7 @@ function closeFoodForm() {
     if (formPanel) formPanel.style.display = "none";
 }
 
-function handleFoodFormSubmit(event) {
+async function handleFoodFormSubmit(event) {
     event.preventDefault();
 
     const idInput = document.getElementById("foodFormId").value;
@@ -453,9 +487,11 @@ function handleFoodFormSubmit(event) {
         return;
     }
 
+
     if (idInput) {
         // Edit existing item
         const existing = menu.find(food => String(food.id) === String(idInput));
+
         if (existing) {
             existing.name = name;
             existing.category = category;
@@ -464,16 +500,9 @@ function handleFoodFormSubmit(event) {
             existing.description = description;
             existing.available = available;
         }
-        showAdminMessage(`Food item "${name}" updated successfully!`);
     } else {
-        // Add new item
-        const newId = menu.reduce(
-            (max, item) => Math.max(max, Number(item.id) || 0),
-            0
-        ) + 1;
-
+        // Add new item (omit id property so Supabase generates UUID automatically)
         menu.push({
-            id: newId,
             name: name,
             category: category,
             price: price,
@@ -482,27 +511,48 @@ function handleFoodFormSubmit(event) {
             available: available,
             popular: false
         });
-        showAdminMessage(`Food item "${name}" added successfully!`);
     }
 
-    saveMenu(menu);
+    const result = await saveMenu(menu);
+
+    if (!result.ok) {
+        errBox.textContent = result.msg;
+        errBox.style.display = "block";
+        return;
+    }
+
+    showAdminMessage(
+        idInput
+            ? `Food item "${name}" updated successfully!`
+            : `Food item "${name}" added successfully!`
+    );
+
     closeFoodForm();
     renderAdminDashboard();
 }
 
-function toggleMenuAvailability(itemId) {
+
+async function toggleMenuAvailability(itemId) {
     const menu = getMenu();
     const item = menu.find(food => String(food.id) === String(itemId));
 
     if (!item) return;
 
     item.available = !item.available;
-    saveMenu(menu);
+
+    const result = await saveMenu(menu);
+
+    if (!result.ok) {
+        showAdminMessage(result.msg, true);
+        return;
+    }
+
     renderAdminDashboard();
     showAdminMessage(`"${item.name}" is now ${item.available ? "Available" : "Unavailable"}.`);
 }
 
-function deleteMenuItem(itemId) {
+
+async function deleteMenuItem(itemId) {
     const menu = getMenu();
     const item = menu.find(food => String(food.id) === String(itemId));
 
@@ -514,11 +564,21 @@ function deleteMenuItem(itemId) {
 
     if (!confirmDelete) return;
 
-    const filtered = menu.filter(food => String(food.id) !== String(itemId));
-    saveMenu(filtered);
+    const filtered = menu.filter(
+        food => String(food.id) !== String(itemId)
+    );
+
+    const result = await saveMenu(filtered);
+
+    if (!result.ok) {
+        showAdminMessage(result.msg, true);
+        return;
+    }
+
     renderAdminDashboard();
     showAdminMessage(`Food item "${item.name}" deleted from the menu.`);
 }
+
 
 // ==========================================
 // 9. CATEGORY MANAGEMENT (NEW FEATURE)
@@ -564,13 +624,13 @@ function renderAdminCategories() {
     }).join("");
 }
 
-function handleAddCategory(event) {
+async function handleAddCategory(event) {
     event.preventDefault();
     const input = document.getElementById("newCategoryInput");
     const name = input.value.trim();
     const msgBox = document.getElementById("categoryMessageBox");
 
-    const result = addCategory(name);
+    const result = await addCategory(name);
 
     msgBox.style.display = "block";
     msgBox.textContent = result.msg;
@@ -590,11 +650,11 @@ function handleAddCategory(event) {
     }, 4000);
 }
 
-function handleRenameCategory(oldName) {
+async function handleRenameCategory(oldName) {
     const newName = prompt(`Enter new name for category "${oldName}":`, oldName);
     if (newName === null) return;
 
-    const result = renameCategory(oldName, newName.trim());
+    const result = await renameCategory(oldName, newName.trim());
     showAdminMessage(result.msg, !result.ok);
 
     if (result.ok) {
@@ -602,11 +662,11 @@ function handleRenameCategory(oldName) {
     }
 }
 
-function handleDeleteCategory(name) {
+async function handleDeleteCategory(name) {
     const confirmDel = confirm(`Are you sure you want to delete category "${name}"?`);
     if (!confirmDel) return;
 
-    const result = deleteCategory(name);
+    const result = await deleteCategory(name);
     showAdminMessage(result.msg, !result.ok);
 
     if (result.ok) {
@@ -640,7 +700,6 @@ function handleResetDemoData() {
 // ==========================================
 
 function renderAdminUsers(users) {
-
     const container = document.getElementById("adminUsers");
     if (!container) return;
 
@@ -654,9 +713,8 @@ function renderAdminUsers(users) {
     }
 
     container.innerHTML = users.map(user => `
-
         <tr>
-            <td><strong>${escapeHTML(user.name || "User")}</strong></td>
+            <td><strong>${escapeHTML(user.full_name || user.name || "User")}</strong></td>
             <td>${escapeHTML(user.email || "-")}</td>
             <td>
                 <span class="admin-status" style="background:#e0e7ff; color:#3730a3;">
@@ -664,9 +722,7 @@ function renderAdminUsers(users) {
                 </span>
             </td>
         </tr>
-
     `).join("");
-
 }
 
 // ==========================================

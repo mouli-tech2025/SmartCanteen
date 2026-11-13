@@ -280,75 +280,219 @@ function initializeAppData() {
     }
 }
 
+
 // ==========================================
-// 4. MENU MANAGEMENT
+// 4. SUPABASE MENU & CATEGORY MANAGEMENT
 // ==========================================
 
+let menuCache = [];
+let categoriesCache = [];
+let categoryRowsCache = [];
+
+function mapSupabaseMenuItem(row) {
+    return {
+        id: row.id,
+        name: row.name,
+        category: row.categories?.name || "",
+        price: Number(row.price),
+        image: row.image_url || DEFAULT_FALLBACK_IMAGE,
+        description: row.description || "",
+        available: row.is_available,
+        popular: row.is_popular
+    };
+}
+
+// Load menu and categories from Supabase.
+async function loadMenuData() {
+    try {
+        const { data: categories, error: categoryError } =
+            await supabaseClient
+                .from("categories")
+                .select("id, name")
+                .order("name");
+
+        if (categoryError) throw categoryError;
+
+        const { data: menuItems, error: menuError } =
+            await supabaseClient
+                .from("menu_items")
+                .select(`
+                    id, name, price, image_url, description,
+                    is_available, is_popular,
+                    categories ( id, name )
+                `)
+                .order("name");
+
+        if (menuError) throw menuError;
+
+        categoryRowsCache = categories || [];
+        categoriesCache = categoryRowsCache.map(category => category.name);
+        menuCache = (menuItems || []).map(mapSupabaseMenuItem);
+
+        console.log("Supabase menu loaded:", menuCache.length, "items");
+        console.log("Supabase categories loaded:", categoriesCache);
+
+        return { ok: true };
+
+    } catch (error) {
+        console.error("Could not load menu from Supabase:", error);
+        return { ok: false, msg: error.message || "Could not load menu." };
+    }
+}
+
+// Return copies so frontend edits don't change the cache before saving.
 function getMenu() {
-    return readJSON(STORAGE_KEYS.MENU, DEFAULT_MENU);
+    return menuCache.map(item => ({ ...item }));
 }
 
 function getMenuItems() {
     return getMenu();
 }
 
-function saveMenu(menu) {
-    localStorage.setItem(
-        STORAGE_KEYS.MENU,
-        JSON.stringify(menu)
-    );
-}
-
-// ==========================================
-// 5. CATEGORY MANAGEMENT
-// ==========================================
-
 function getCategories() {
-    let categories = readJSON(STORAGE_KEYS.CATEGORIES, null);
-
-    if (!categories || !Array.isArray(categories) || categories.length === 0) {
-        const menu = getMenu();
-        const extracted = [];
-        menu.forEach(item => {
-            if (item.category && !extracted.includes(item.category)) {
-                extracted.push(item.category);
-            }
-        });
-        categories = extracted.length > 0 ? extracted : [...DEFAULT_CATEGORIES];
-        saveCategories(categories);
-    }
-
-    return categories;
+    return [...categoriesCache];
 }
 
-function saveCategories(categories) {
-    localStorage.setItem(
-        STORAGE_KEYS.CATEGORIES,
-        JSON.stringify(categories)
+// Find the Supabase category ID using its name.
+function getCategoryId(categoryName) {
+    const category = categoryRowsCache.find(
+        item => item.name.toLowerCase() === String(categoryName).toLowerCase()
     );
+
+    return category ? category.id : null;
 }
 
-function addCategory(name) {
+// Save additions, edits and deletions to Supabase.
+async function saveMenu(menu) {
+    try {
+        const oldItems = menuCache || [];
+        const newItems = menu || [];
+
+        // Helper to check whether an ID is an existing valid UUID
+        const isUUID = id =>
+            typeof id === "string" &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+        // Find items removed from the menu (only comparing valid existing UUIDs)
+        const newIds = new Set(
+            newItems
+                .filter(item => isUUID(item.id))
+                .map(item => String(item.id))
+        );
+
+        const removedIds = oldItems
+            .filter(item => isUUID(item.id) && !newIds.has(String(item.id)))
+            .map(item => item.id);
+
+        if (removedIds.length > 0) {
+            const { error } = await supabaseClient
+                .from("menu_items")
+                .delete()
+                .in("id", removedIds);
+
+            if (error) throw error;
+        }
+
+        const existingRows = [];
+        const newRows = [];
+
+        for (const item of newItems) {
+            const categoryId = getCategoryId(item.category);
+
+            if (!categoryId) {
+                throw new Error(`Category "${item.category}" was not found.`);
+            }
+
+            if (isUUID(item.id)) {
+                // Existing menu item: preserve actual UUID for updating/upserting
+                existingRows.push({
+                    id: item.id,
+                    name: item.name,
+                    category_id: categoryId,
+                    price: Number(item.price),
+                    image_url: item.image || DEFAULT_FALLBACK_IMAGE,
+                    description: item.description || "",
+                    is_available: item.available !== false,
+                    is_popular: item.popular === true
+                });
+            } else {
+                // New menu item: completely omit the `id` property from the payload.
+                // Supabase will automatically generate a UUID using gen_random_uuid().
+                newRows.push({
+                    name: item.name,
+                    category_id: categoryId,
+                    price: Number(item.price),
+                    image_url: item.image || DEFAULT_FALLBACK_IMAGE,
+                    description: item.description || "",
+                    is_available: item.available !== false,
+                    is_popular: item.popular === true
+                });
+            }
+        }
+
+        // Insert new items (no `id` property sent)
+        if (newRows.length > 0) {
+            const { error: insertError } = await supabaseClient
+                .from("menu_items")
+                .insert(newRows);
+
+            if (insertError) throw insertError;
+        }
+
+        // Upsert existing items with their actual UUIDs
+        if (existingRows.length > 0) {
+            const { error: updateError } = await supabaseClient
+                .from("menu_items")
+                .upsert(existingRows);
+
+            if (updateError) throw updateError;
+        }
+
+        const result = await loadMenuData();
+        if (!result.ok) throw new Error(result.msg);
+
+        return { ok: true, msg: "Menu saved successfully." };
+
+    } catch (error) {
+        console.error("Could not save menu:", error);
+        return { ok: false, msg: error.message || "Could not save menu." };
+    }
+}
+
+// ==========================================
+// 5. SUPABASE CATEGORY MANAGEMENT
+// ==========================================
+
+async function addCategory(name) {
     const trimmed = String(name || "").trim();
 
     if (trimmed.length < 2 || trimmed.length > 20) {
         return { ok: false, msg: "Category name must be between 2 and 20 characters." };
     }
 
-    const categories = getCategories();
-    const isDuplicate = categories.some(cat => cat.toLowerCase() === trimmed.toLowerCase());
-
-    if (isDuplicate) {
+    if (categoriesCache.some(cat => cat.toLowerCase() === trimmed.toLowerCase())) {
         return { ok: false, msg: `Category "${trimmed}" already exists.` };
     }
 
-    categories.push(trimmed);
-    saveCategories(categories);
+    try {
+        const { error } = await supabaseClient
+            .from("categories")
+            .insert({ name: trimmed });
 
-    return { ok: true, msg: `Category "${trimmed}" added successfully.` };
+        if (error) throw error;
+
+        const result = await loadMenuData();
+        if (!result.ok) throw new Error(result.msg);
+
+        return { ok: true, msg: `Category "${trimmed}" added successfully.` };
+
+    } catch (error) {
+        console.error("Could not add category:", error);
+        return { ok: false, msg: error.message || "Could not add category." };
+    }
 }
 
-function renameCategory(oldName, newName) {
+async function renameCategory(oldName, newName) {
     const trimmedOld = String(oldName || "").trim();
     const trimmedNew = String(newName || "").trim();
 
@@ -356,66 +500,90 @@ function renameCategory(oldName, newName) {
         return { ok: false, msg: "New category name must be between 2 and 20 characters." };
     }
 
-    const categories = getCategories();
-    const index = categories.findIndex(cat => cat.toLowerCase() === trimmedOld.toLowerCase());
+    const category = categoryRowsCache.find(
+        item => item.name.toLowerCase() === trimmedOld.toLowerCase()
+    );
 
-    if (index === -1) {
+    if (!category) {
         return { ok: false, msg: `Category "${trimmedOld}" not found.` };
     }
 
-    const isDuplicate = categories.some((cat, i) => i !== index && cat.toLowerCase() === trimmedNew.toLowerCase());
-    if (isDuplicate) {
+    if (categoriesCache.some(
+        cat => cat.toLowerCase() === trimmedNew.toLowerCase() &&
+               cat.toLowerCase() !== trimmedOld.toLowerCase()
+    )) {
         return { ok: false, msg: `Category "${trimmedNew}" already exists.` };
     }
 
-    categories[index] = trimmedNew;
-    saveCategories(categories);
+    try {
+        const { error } = await supabaseClient
+            .from("categories")
+            .update({ name: trimmedNew })
+            .eq("id", category.id);
 
-    const menu = getMenu();
-    let updatedCount = 0;
-    menu.forEach(item => {
-        if (item.category && item.category.toLowerCase() === trimmedOld.toLowerCase()) {
-            item.category = trimmedNew;
-            updatedCount++;
-        }
-    });
+        if (error) throw error;
 
-    if (updatedCount > 0) {
-        saveMenu(menu);
+        const result = await loadMenuData();
+        if (!result.ok) throw new Error(result.msg);
+
+        const updatedCount = menuCache.filter(
+            item => item.category.toLowerCase() === trimmedNew.toLowerCase()
+        ).length;
+
+        return {
+            ok: true,
+            msg: `Renamed category to "${trimmedNew}". ${updatedCount} food item(s) remain assigned to it.`
+        };
+
+    } catch (error) {
+        console.error("Could not rename category:", error);
+        return { ok: false, msg: error.message || "Could not rename category." };
     }
-
-    return {
-        ok: true,
-        msg: `Renamed category to "${trimmedNew}". Updated ${updatedCount} food item(s).`
-    };
 }
 
-function deleteCategory(name) {
+async function deleteCategory(name) {
     const trimmed = String(name || "").trim();
-    const categories = getCategories();
-    const index = categories.findIndex(cat => cat.toLowerCase() === trimmed.toLowerCase());
 
-    if (index === -1) {
+    const category = categoryRowsCache.find(
+        item => item.name.toLowerCase() === trimmed.toLowerCase()
+    );
+
+    if (!category) {
         return { ok: false, msg: `Category "${trimmed}" not found.` };
     }
 
-    const menu = getMenu();
-    const itemsInCat = menu.filter(item =>
-        item.category && item.category.toLowerCase() === trimmed.toLowerCase()
+    const itemsInCategory = menuCache.filter(
+        item => item.category.toLowerCase() === trimmed.toLowerCase()
     );
 
-    if (itemsInCat.length > 0) {
+    if (itemsInCategory.length > 0) {
         return {
             ok: false,
-            msg: `Cannot delete "${trimmed}": ${itemsInCat.length} food item(s) are currently assigned to this category. Please reassign or delete them first.`
+            msg: `Cannot delete "${trimmed}": ${itemsInCategory.length} food item(s) are currently assigned to this category. Please reassign or delete them first.`
         };
     }
 
-    categories.splice(index, 1);
-    saveCategories(categories);
+    try {
+        const { error } = await supabaseClient
+            .from("categories")
+            .delete()
+            .eq("id", category.id);
 
-    return { ok: true, msg: `Category "${trimmed}" deleted successfully.` };
+        if (error) throw error;
+
+        const result = await loadMenuData();
+        if (!result.ok) throw new Error(result.msg);
+
+        return { ok: true, msg: `Category "${trimmed}" deleted successfully.` };
+
+    } catch (error) {
+        console.error("Could not delete category:", error);
+        return { ok: false, msg: error.message || "Could not delete category." };
+    }
 }
+
+
+
 
 // ==========================================
 // 6. ORDER MANAGEMENT

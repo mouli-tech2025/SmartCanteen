@@ -8,7 +8,6 @@
 // ==========================================
 
 const currentStudent = enforceRole("student");
-
 // ==========================================
 // 2. STUDENT STATE
 // ==========================================
@@ -25,27 +24,45 @@ let lastOrdersFingerprint = "";
 // 3. INITIALIZE STUDENT DASHBOARD
 // ==========================================
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async function() {
 
     if (!currentStudent || currentStudent.role !== "student") {
         return;
     }
+    const menuResult = await loadMenuData();
+
+if (!menuResult.ok) {
+    alert("Unable to load the food menu. Please refresh the page.");
+    return;
+}
 
     // Load persisted cart for this student
     if (typeof getStudentCart === "function") {
         cart = getStudentCart(currentStudent.id);
     }
 
-    const navName = document.getElementById("navUserName");
-    if (navName) navName.textContent = currentStudent.name;
+  // Load persisted cart for this student
+if (typeof getStudentCart === "function") {
+    cart = getStudentCart(currentStudent.id);
+}
 
-    const sidebarName = document.getElementById("sidebarUserName");
-    if (sidebarName) sidebarName.textContent = currentStudent.name;
+// DISPLAY STUDENT NAME
+const studentName =
+    currentStudent.full_name ||
+    currentStudent.name ||
+    currentStudent.email?.split("@")[0] ||
+    "Student";
 
-    const welcome = document.getElementById("welcomeName");
-    if (welcome) welcome.textContent = (currentStudent.name || "Student").split(" ")[0];
+const navName = document.getElementById("navUserName");
+if (navName) navName.textContent = studentName;
 
-    const dateElem = document.getElementById("currentDate");
+const sidebarName = document.getElementById("sidebarUserName");
+if (sidebarName) sidebarName.textContent = studentName;
+
+const welcome = document.getElementById("welcomeName");
+if (welcome) welcome.textContent = studentName.split(" ")[0];
+
+const dateElem = document.getElementById("currentDate");
     if (dateElem) {
         dateElem.textContent = new Date().toLocaleDateString("en-IN", {
             weekday: "short",
@@ -198,7 +215,7 @@ function renderFoodCard(food) {
                     <button
                         type="button"
                         class="add-cart-btn"
-                        onclick="addToCart(${food.id})"
+                        onclick="addToCart('${food.id}')"
                         ${!food.available ? "disabled" : ""}
                     >
                         ${addBtnContent}
@@ -361,7 +378,7 @@ function renderMenu() {
 function addToCart(foodId) {
 
     const food = getMenu().find(
-        item => Number(item.id) === Number(foodId)
+        item => String(item.id) === String(foodId)
     );
 
     if (!food || !food.available) {
@@ -370,7 +387,7 @@ function addToCart(foodId) {
     }
 
     const existingItem = cart.find(
-        item => Number(item.id) === Number(foodId)
+        item => String(item.id) === String(foodId)
     );
 
     if (existingItem) {
@@ -402,7 +419,7 @@ function addToCart(foodId) {
 function changeQuantity(foodId, change) {
 
     const item = cart.find(
-        food => Number(food.id) === Number(foodId)
+        food => String(food.id) === String(foodId)
     );
 
     if (!item) return;
@@ -415,7 +432,7 @@ function changeQuantity(foodId, change) {
     }
 
     if (newQuantity <= 0) {
-        cart = cart.filter(food => Number(food.id) !== Number(foodId));
+        cart = cart.filter(food => String(food.id) !== String(foodId));
     } else {
         item.quantity = newQuantity;
     }
@@ -426,7 +443,7 @@ function changeQuantity(foodId, change) {
 }
 
 function removeFromCart(foodId) {
-    cart = cart.filter(food => Number(food.id) !== Number(foodId));
+    cart = cart.filter(food => String(food.id) !== String(foodId));
     persistCart();
     renderCart();
 }
@@ -518,13 +535,13 @@ function renderCart() {
 
                     <div class="quantity-controls">
 
-                        <button type="button" onclick="changeQuantity(${item.id}, -1)" aria-label="Decrease quantity">
+                        <button type="button" onclick="changeQuantity('${item.id}', -1)" aria-label="Decrease quantity">
                             ${getLucideIcon("minus", 12, 2.5)}
                         </button>
 
                         <span>${item.quantity}</span>
 
-                        <button type="button" onclick="changeQuantity(${item.id}, 1)" aria-label="Increase quantity">
+                        <button type="button" onclick="changeQuantity('${item.id}', 1)" aria-label="Increase quantity">
                             ${getLucideIcon("plus", 12, 2.5)}
                         </button>
 
@@ -532,7 +549,7 @@ function renderCart() {
 
                 </div>
 
-                <button type="button" class="cart-item-remove-btn" onclick="removeFromCart(${item.id})" title="Remove item">
+                <button type="button" class="cart-item-remove-btn" onclick="removeFromCart('${item.id}')" title="Remove item">
                     ${getLucideIcon("trash-2", 14)}
                 </button>
 
@@ -563,24 +580,24 @@ function renderCart() {
 // 13. CHECKOUT AND PLACE ORDER
 // ==========================================
 
-function checkout() {
+
+async function checkout() {
 
     if (cart.length === 0) {
-        alert("Your cart is empty! Please add some food items before placing an order.");
+        alert("Your cart is empty!");
         return;
     }
 
     const latestMenu = getMenu();
 
     for (const item of cart) {
-
         const latestFood = latestMenu.find(
-            food => Number(food.id) === Number(item.id) && food.available
+            food => String(food.id) === String(item.id) && food.available
         );
 
         if (!latestFood) {
-            alert(`"${item.name}" is no longer available. Please update your cart.`);
-            cart = cart.filter(food => Number(food.id) !== Number(item.id));
+            alert(`"${item.name}" is no longer available.`);
+            cart = cart.filter(food => String(food.id) !== String(item.id));
             persistCart();
             renderCart();
             renderMenu();
@@ -591,11 +608,14 @@ function checkout() {
     }
 
     const bill = calculateCart();
-    const orders = getOrders();
+
+    // Generate a real UUID for the order
+    const orderId = crypto.randomUUID();
     const token = generateOrderToken();
+    const now = new Date().toISOString();
 
     const newOrder = {
-        id: "ORD" + Date.now(),
+        id: orderId,
         token: token,
         studentId: currentStudent.id,
         studentName: currentStudent.name,
@@ -604,26 +624,88 @@ function checkout() {
         subtotal: bill.subtotal,
         tax: bill.tax,
         total: bill.total,
-        status: "Pending", // Pending -> Preparing -> Ready -> Completed
+        status: "Pending",
         paymentMethod: "Pay at Counter",
-        createdAt: new Date().toISOString()
+        createdAt: now
     };
 
-    orders.push(newOrder);
-    saveOrders(orders);
+    try {
 
-    latestOrderId = newOrder.id;
-    cart = [];
-    persistCart();
+        // 1. Save the main order
+        const { error: orderError } = await supabaseClient
+            .from("orders")
+            .insert({
+                id: orderId,
+                token: token,
+                student_id: currentStudent.id,
+                subtotal: bill.subtotal,
+                tax: bill.tax,
+                total: bill.total,
+                status: "Pending",
+                payment_method: "Pay at Counter",
+                created_at: now,
+                updated_at: now
+            });
 
-    renderCart();
-    renderStudentStats();
-    renderRecentOrders();
-    renderOrders();
+        if (orderError) throw orderError;
 
-    showOrderConfirmation(newOrder);
+        // 2. Save individual food items
+        const orderItems = cart.map(item => ({
+            id: crypto.randomUUID(),
+            order_id: orderId,
+            menu_item_id: item.id,
+            item_name: item.name,
+            item_price: Number(item.price),
+            quantity: Number(item.quantity),
+            line_total: Number(item.price) * Number(item.quantity)
+        }));
 
+        const { error: itemsError } = await supabaseClient
+            .from("order_items")
+            .insert(orderItems);
+
+        if (itemsError) {
+
+            // Remove the incomplete order if its items failed
+            const { error: cleanupError } = await supabaseClient
+                .from("orders")
+                .delete()
+                .eq("id", orderId);
+
+            if (cleanupError) {
+                console.error("Order cleanup failed:", cleanupError);
+            }
+
+            throw itemsError;
+        }
+
+        // 3. Keep a local copy for existing dashboard functions
+        const orders = getOrders();
+        orders.push(newOrder);
+        saveOrders(orders);
+
+        // 4. Clear cart after successful database save
+        latestOrderId = orderId;
+        cart = [];
+        persistCart();
+
+        renderCart();
+        renderStudentStats();
+        renderRecentOrders();
+        await renderOrders();
+
+        showOrderConfirmation(newOrder);
+
+        console.log("ORDER SAVED TO SUPABASE:", orderId);
+
+    } catch (error) {
+
+        console.error("ORDER SAVE ERROR:", error);
+        alert("Could not place your order: " + error.message);
+
+    }
 }
+
 
 
 // ==========================================
@@ -783,25 +865,52 @@ function renderRecentOrders() {
 // 19. RENDER ALL ORDERS (WITH PROGRESS TRACKER)
 // ==========================================
 
-function renderOrders() {
+async function renderOrders() {
 
-    const orders = getStudentOrders();
     const container = document.getElementById("ordersContainer");
     if (!container) return;
 
-    if (!orders.length) {
+    container.innerHTML = "<p>Loading your orders...</p>";
+
+    const { data: orders, error } = await supabaseClient
+        .from("orders")
+        .select(`
+            id, token, student_id, subtotal, tax, total,
+            status, payment_method, created_at,
+            order_items (
+                id, item_name, item_price, quantity, line_total
+            )
+        `)
+        .eq("student_id", currentStudent.id)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("STUDENT ORDER HISTORY ERROR:", error);
+        container.innerHTML = "<p>Could not load your orders. Please refresh.</p>";
+        return;
+    }
+
+    const ordersForDisplay = (orders || []).map(order => ({
+        ...order,
+        createdAt: order.created_at,
+        items: (order.order_items || []).map(item => ({
+            name: item.item_name,
+            price: Number(item.item_price),
+            quantity: item.quantity
+        }))
+    }));
+
+    if (!ordersForDisplay.length) {
         container.innerHTML = `
             <div class="no-orders" style="text-align:center; padding:50px 20px; background:#FFFFFF; border:1px solid #E5E7EB; border-radius:16px;">
                 <img src="../assets/images/illustrations/no-orders.svg" alt="No Orders" style="width:140px; margin-bottom:14px;">
                 <h3 style="margin-bottom:6px; font-size:17px; color:#252525;">No orders placed yet</h3>
                 <p style="color:#777777; font-size:13px; margin:0;">Explore the campus menu to place your first order.</p>
-            </div>
-        `;
+            </div>`;
         return;
-
     }
 
-    container.innerHTML = orders.map(order => {
+    container.innerHTML = ordersForDisplay.map(order => {
 
         const isRejected = order.status === "Rejected";
         const steps = ["Pending", "Preparing", "Ready", "Completed"];
@@ -820,31 +929,28 @@ function renderOrders() {
                             <div style="color:${isCurrent ? '#F97316' : isPassed ? '#16A36A' : '#777777'}; font-weight:${isCurrent ? '800' : '600'};">
                                 ${step}
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }).join("")}
             </div>
         ` : `
-            <div style="background:#FEE2E2; color:#DC2626; border:1px solid #FECACA; padding:10px 14px; border-radius:8px; margin:14px 0; font-size:12.5px; font-weight:600; display:flex; align-items:center; gap:8px;">
+            <div style="background:#FEE2E2; color:#DC2626; border:1px solid #FECACA; padding:10px 14px; border-radius:8px; margin:14px 0; font-size:12.5px; font-weight:600;">
                 ${getLucideIcon("x-circle", 16)}
                 This order was rejected by the kitchen counter. Please contact canteen staff.
-            </div>
-        `;
+            </div>`;
 
         return `
             <article class="order-card">
-
                 <div class="order-card-top">
-
                     <div>
                         <h3>${escapeHTML(order.token)}</h3>
-                        <p style="font-size:12px; color:#777777;">Order ID: ${escapeHTML(order.id)} &bull; ${new Date(order.createdAt).toLocaleString("en-IN")}</p>
+                        <p style="font-size:12px; color:#777777;">
+                            Order ID: ${escapeHTML(order.id)} &bull;
+                            ${new Date(order.createdAt).toLocaleString("en-IN")}
+                        </p>
                     </div>
-
                     <span class="order-status status-${getStatusClass(order.status)}">
                         ${escapeHTML(order.status)}
                     </span>
-
                 </div>
 
                 ${trackerHTML}
@@ -856,17 +962,15 @@ function renderOrders() {
                 </div>
 
                 <div class="order-card-bottom">
-
                     <span>Pickup Token: <strong style="color:#F97316;">${escapeHTML(order.token)}</strong></span>
-
                     <strong>Total: ₹${Number(order.total).toFixed(2)}</strong>
-
                 </div>
-
-            </article>
-        `;
+            </article>`;
     }).join("");
 
+    if (typeof lucide !== "undefined" && lucide.createIcons) {
+        lucide.createIcons();
+    }
 }
 
 
@@ -882,3 +986,36 @@ window.addEventListener("focus", function() {
 });
 
 console.log("Student dashboard initialized.");
+
+
+
+let studentOrderRealtimeChannel = null;
+
+function subscribeToStudentOrderUpdates() {
+
+    if (!currentStudent?.id) return;
+
+    if (studentOrderRealtimeChannel) {
+        supabaseClient.removeChannel(studentOrderRealtimeChannel);
+    }
+
+    studentOrderRealtimeChannel = supabaseClient
+        .channel("student-orders-" + currentStudent.id)
+        .on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "orders",
+                filter: "student_id=eq." + currentStudent.id
+            },
+            async (payload) => {
+                console.log("ORDER STATUS CHANGED:", payload.new);
+                await renderOrders();
+            }
+        )
+        .subscribe((status) => {
+            console.log("Student order realtime:", status);
+        });
+}
+

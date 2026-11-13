@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | Smart Canteen</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="../assets/images/favicon.png">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="shortcut icon" href="../assets/images/favicon.ico">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/student.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="student-body">
+
+    <!-- Top Navigation -->
+    <header class="student-navbar">
+        <a href="../index.html" class="student-brand">
+            <span class="student-brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/><path d="M15 11v11"/><path d="M5 2v4a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V2"/><path d="M8 9v13"/>
+                </svg>
+            </span>
+            Smart<span>Canteen</span>
+        </a>
+
+        <div class="student-nav-right">
+            <div class="student-user-pill">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="student-user-name" id="navUserName">Student</span>
+            </div>
+            <button class="logout-btn" onclick="logoutUser()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="student-layout">
+
+        <!-- Sidebar -->
+        <aside class="student-sidebar">
+
+            <div class="sidebar-profile">
+                <div class="profile-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div>
+                    <strong id="sidebarUserName">Student</strong>
+                    <small>Student Portal</small>
+                </div>
+            </div>
+
+            <p class="sidebar-heading">MAIN MENU</p>
+
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="sidebar-link active" data-section="dashboard">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                    Dashboard
+                </a>
+
+                <a href="#menu" class="sidebar-link" data-section="menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/><path d="M15 11v11"/><path d="M5 2v4a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V2"/><path d="M8 9v13"/></svg>
+                    Campus Menu
+                </a>
+
+                <a href="#orders" class="sidebar-link" data-section="orders">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                    My Orders
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-help">
+                    <div class="help-icon-wrap">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <strong>Need Help?</strong>
+                    <p>Contact your campus cafeteria counter for assistance.</p>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="student-main">
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="student-section">
+
+                <div class="welcome-section">
+                    <div>
+                        <span class="welcome-label">STUDENT DASHBOARD</span>
+                        <h1>Hello, <span id="welcomeName">Student</span>!</h1>
+                        <p>What would you like to eat today?</p>
+                    </div>
+
+                    <div class="welcome-date" id="currentDate"></div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="student-stats">
+
+                    <div class="student-stat-card">
+                        <div class="stat-icon orange">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
+                        </div>
+                        <div>
+                            <span>Total Orders</span>
+                            <h2 id="totalOrders">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="student-stat-card">
+                        <div class="stat-icon green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                        </div>
+                        <div>
+                            <span>Completed Orders</span>
+                            <h2 id="completedOrders">0</h2>
+                        </div>
+                    </div>
+
+                    <div class="student-stat-card">
+                        <div class="stat-icon blue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div>
+                            <span>Active Orders</span>
+                            <h2 id="activeOrders">0</h2>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Promotional Banner with Vector Illustration -->
+                <div class="student-banner">
+                    <div class="banner-text-wrap">
+                        <span class="banner-tag">FRESH FOOD &bull; SMART ORDERING</span>
+                        <h2>Fresh Meals, Zero Queues.<br>Pre-Order in Seconds!</h2>
+                        <button onclick="showSection('menu')" class="banner-btn">
+                            Explore Menu
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                    <div class="banner-illustration">
+                        <img src="../assets/images/illustrations/student-welcome.svg" alt="College Dining Illustration">
+                    </div>
+                </div>
+
+                <!-- Popular Food -->
+                <div class="content-heading">
+                    <div>
+                        <h2>Popular Today</h2>
+                        <p>Most loved meals by students this week.</p>
+                    </div>
+                    <button class="text-link" onclick="showSection('menu')">
+                        View Full Menu &rarr;
+                    </button>
+                </div>
+
+                <div class="food-grid" id="popularFoodGrid"></div>
+
+                <!-- Recent Orders -->
+                <div class="content-heading">
+                    <div>
+                        <h2>Recent Orders</h2>
+                        <p>Check the status of your recent meals.</p>
+                    </div>
+                    <button class="text-link" onclick="showSection('orders')">
+                        View All Orders &rarr;
+                    </button>
+                </div>
+
+                <div id="recentOrdersContainer"></div>
+
+            </section>
+
+
+            <!-- MENU SECTION -->
+            <section id="menu" class="student-section hidden">
+
+                <div class="welcome-section">
+                    <div>
+                        <span class="welcome-label">CAMPUS CAFETERIA</span>
+                        <h1>Our Menu</h1>
+                        <p>Browse fresh meals and drinks prepared daily.</p>
+                    </div>
+                </div>
+
+                <div class="menu-toolbar">
+
+                    <div class="search-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input
+                            type="search"
+                            id="foodSearch"
+                            placeholder="Search by food name or category..."
+                        >
+                    </div>
+
+                    <select id="sortFood">
+                        <option value="default">Sort: Recommended</option>
+                        <option value="low">Price: Low to High</option>
+                        <option value="high">Price: High to Low</option>
+                        <option value="name">Name: A to Z</option>
+                    </select>
+
+                </div>
+
+                <!-- Dynamic Category Filter Chips -->
+                <div class="category-filters" id="categoryFilters">
+                    <!-- Injected by student.js with icons -->
+                </div>
+
+                <div class="menu-result-info">
+                    <h2>Available Food</h2>
+                    <span id="foodCount">Showing items</span>
+                </div>
+
+                <div class="food-grid" id="menuFoodGrid"></div>
+
+            </section>
+
+
+            <!-- MY ORDERS SECTION -->
+            <section id="orders" class="student-section hidden">
+
+                <div class="welcome-section">
+                    <div>
+                        <span class="welcome-label">ORDER TRACKING</span>
+                        <h1>My Orders</h1>
+                        <p>Real-time updates on your meal preparation.</p>
+                    </div>
+                </div>
+
+                <div id="ordersContainer"></div>
+
+            </section>
+
+        </main>
+
+        <!-- CART SIDEBAR -->
+        <aside class="cart-sidebar">
+
+            <div class="cart-heading">
+                <div>
+                    <h2>My Cart</h2>
+                    <p id="cartItemCount">0 items</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button type="button" onclick="clearCart()" class="cart-clear-btn" title="Clear all items in cart">
+                        Clear
+                    </button>
+                    <span class="cart-count" id="cartBadge">0</span>
+                </div>
+            </div>
+
+            <div id="cartItems" class="cart-items">
+                <div class="empty-cart">
+                    <img src="../assets/images/illustrations/empty-cart.svg" alt="Empty Cart" style="width:140px; margin-bottom:12px;">
+                    <h3>Your cart is empty</h3>
+                    <p>Select delicious meals from the campus menu to get started.</p>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong id="cartSubtotal">₹0.00</strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>Campus Tax (5%)</span>
+                    <strong id="cartTax">₹0.00</strong>
+                </div>
+
+                <div class="summary-row total-row">
+                    <span>Total Amount</span>
+                    <strong id="cartTotal">₹0.00</strong>
+                </div>
+
+                <button class="checkout-btn" id="checkoutButton" onclick="checkout()">
+                    <span>Place Order</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+
+                <p class="cart-note">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    Freshly prepared &bull; Pay at counter or wallet
+                </p>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+
+    <!-- ORDER SUCCESS MODAL -->
+    <div class="modal-overlay hidden" id="orderModal">
+
+        <div class="order-modal">
+
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+
+            <span class="welcome-label">ORDER CONFIRMED</span>
+
+            <h2>Your Order is Placed!</h2>
+
+            <p>Your food order has been sent to the kitchen display.</p>
+
+            <div class="token-display">
+                <span>DIGITAL PICKUP TOKEN</span>
+                <h1 id="generatedToken">TK-001</h1>
+            </div>
+
+            <div class="modal-order-details" id="modalOrderDetails"></div>
+
+            <button class="checkout-btn" onclick="closeOrderModal()">
+                Track My Order &rarr;
+            </button>
+
+        </div>
+
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+    <script src="../js/data.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/student.js"></script>
+
+</body>
+</html>

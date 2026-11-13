@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Kitchen | Smart Canteen</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="../assets/images/favicon.png">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="shortcut icon" href="../assets/images/favicon.ico">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/staff.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="staff-body">
+
+<header class="staff-navbar">
+    <a href="../index.html" class="staff-brand">
+        <span class="brand-icon-wrap"><i data-lucide="utensils"></i></span>
+        <span>Smart<span>Canteen</span></span>
+    </a>
+
+    <div class="staff-nav-right">
+        <span class="staff-role">
+            <i data-lucide="chef-hat" style="width:16px; height:16px;"></i>
+            Kitchen Staff
+        </span>
+        <button class="staff-logout" onclick="logoutUser()">
+            <i data-lucide="log-out" style="width:16px; height:16px;"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+</header>
+
+<div class="staff-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="staff-sidebar">
+
+        <div class="staff-profile">
+            <div class="staff-avatar">
+                <i data-lucide="chef-hat"></i>
+            </div>
+            <div>
+                <strong id="staffName">Kitchen Staff</strong>
+                <small>Staff Portal</small>
+            </div>
+        </div>
+
+        <p class="staff-menu-label">WORKSPACE</p>
+
+        <nav class="staff-navigation">
+            <a href="#overview" class="staff-link active" data-section="overview">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="#incoming" class="staff-link" data-section="incoming">
+                <i data-lucide="inbox"></i>
+                <span>Incoming Orders</span>
+                <span class="nav-count" id="incomingBadge">0</span>
+            </a>
+
+            <a href="#preparing" class="staff-link" data-section="preparing">
+                <i data-lucide="flame"></i>
+                <span>Preparing</span>
+            </a>
+
+            <a href="#ready" class="staff-link" data-section="ready">
+                <i data-lucide="bell"></i>
+                <span>Ready for Pickup</span>
+            </a>
+
+            <a href="#completed" class="staff-link" data-section="completed">
+                <i data-lucide="check-circle-2"></i>
+                <span>Completed</span>
+            </a>
+        </nav>
+
+        <div class="staff-sidebar-bottom">
+            <i data-lucide="flame"></i>
+            <strong>Kitchen Reminder</strong>
+            <p>Keep orders updated so students can track their food in real time.</p>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="staff-main">
+
+        <!-- OVERVIEW -->
+        <section id="overview" class="staff-section">
+
+            <div class="staff-heading">
+                <div>
+                    <span class="staff-eyebrow">KITCHEN MANAGEMENT</span>
+                    <h1>Kitchen Dashboard</h1>
+                    <p>Manage student orders and food preparation efficiently.</p>
+                </div>
+
+                <div class="staff-date" id="staffDate"></div>
+            </div>
+
+            <div class="staff-stats">
+
+                <div class="staff-stat">
+                    <div class="staff-stat-icon orange">
+                        <i data-lucide="package"></i>
+                    </div>
+                    <div>
+                        <span>Total Orders</span>
+                        <h2 id="staffTotal">0</h2>
+                    </div>
+                </div>
+
+                <div class="staff-stat">
+                    <div class="staff-stat-icon blue">
+                        <i data-lucide="clock"></i>
+                    </div>
+                    <div>
+                        <span>Pending Orders</span>
+                        <h2 id="staffPending">0</h2>
+                    </div>
+                </div>
+
+                <div class="staff-stat">
+                    <div class="staff-stat-icon yellow">
+                        <i data-lucide="flame"></i>
+                    </div>
+                    <div>
+                        <span>Preparing</span>
+                        <h2 id="staffPreparing">0</h2>
+                    </div>
+                </div>
+
+                <div class="staff-stat">
+                    <div class="staff-stat-icon green">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
+                    <div>
+                        <span>Completed</span>
+                        <h2 id="staffCompleted">0</h2>
+                    </div>
+                </div>
+
+                <div class="staff-stat">
+                    <div class="staff-stat-icon emerald">
+                        <i data-lucide="bell"></i>
+                    </div>
+                    <div>
+                        <span>Ready</span>
+                        <h2 id="staffReady">0</h2>
+                    </div>
+                </div>
+
+                <div class="staff-stat">
+                    <div class="staff-stat-icon red">
+                        <i data-lucide="x-circle"></i>
+                    </div>
+                    <div>
+                        <span>Rejected</span>
+                        <h2 id="staffRejected">0</h2>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="staff-section-heading">
+                <div>
+                    <h2>Recent Incoming Orders</h2>
+                    <p>Orders waiting for kitchen attention.</p>
+                </div>
+
+                <button class="staff-view-btn" onclick="showStaffSection('incoming')">
+                    View All →
+                </button>
+            </div>
+
+            <div id="overviewOrders" class="staff-orders-grid"></div>
+
+        </section>
+
+
+        <!-- INCOMING ORDERS -->
+        <section id="incoming" class="staff-section hidden">
+
+            <div class="staff-heading">
+                <div>
+                    <span class="staff-eyebrow">NEW REQUESTS</span>
+                    <h1>Incoming Orders</h1>
+                    <p>Review and accept or reject student orders.</p>
+                </div>
+            </div>
+
+            <div class="staff-filter-row">
+                <span>All incoming student orders</span>
+                <span id="incomingCount">0 orders</span>
+            </div>
+
+            <div id="incomingOrders" class="staff-orders-grid"></div>
+
+        </section>
+
+
+        <!-- PREPARING ORDERS -->
+        <section id="preparing" class="staff-section hidden">
+
+            <div class="staff-heading">
+                <div>
+                    <span class="staff-eyebrow">KITCHEN WORKSPACE</span>
+                    <h1>Preparing Orders</h1>
+                    <p>Orders currently being prepared in the kitchen.</p>
+                </div>
+            </div>
+
+            <div id="preparingOrders" class="staff-orders-grid"></div>
+
+        </section>
+
+
+        <!-- READY ORDERS -->
+        <section id="ready" class="staff-section hidden">
+
+            <div class="staff-heading">
+                <div>
+                    <span class="staff-eyebrow">PICKUP COUNTER</span>
+                    <h1>Ready for Pickup</h1>
+                    <p>Food orders ready for student collection.</p>
+                </div>
+            </div>
+
+            <div id="readyOrders" class="staff-orders-grid"></div>
+
+        </section>
+
+
+        <!-- COMPLETED ORDERS -->
+        <section id="completed" class="staff-section hidden">
+
+            <div class="staff-heading">
+                <div>
+                    <span class="staff-eyebrow">ORDER HISTORY</span>
+                    <h1>Completed Orders</h1>
+                    <p>Successfully collected student orders.</p>
+                </div>
+            </div>
+
+            <div id="completedOrders" class="staff-orders-grid"></div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/staff.js"></script>
+
+</body>
+</html>

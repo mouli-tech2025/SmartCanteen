@@ -5,7 +5,7 @@
 // ==========================================
 // 1. STAFF AUTHENTICATION & ROLE GUARD
 // ==========================================
-
+let staffOrdersCache = [];
 const currentStaff = enforceRole("staff");
 
 // ==========================================
@@ -106,13 +106,76 @@ function showStaffSection(sectionId) {
 // 4. GET ALL ORDERS
 // ==========================================
 
-function getAllStaffOrders() {
 
-    return getOrders().sort((a, b) =>
-        new Date(b.createdAt) - new Date(a.createdAt)
-    );
 
+async function getAllStaffOrders() {
+    const { data: orders, error } = await supabaseClient
+        .from("orders")
+        .select(`
+            id, token, student_id, subtotal, tax, total,
+            status, payment_method, created_at, updated_at,
+            order_items (
+                id, menu_item_id, item_name,
+                item_price, quantity, line_total
+            )
+        `)
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    // Get student IDs from orders
+    const studentIds = [
+        ...new Set((orders || []).map(order => order.student_id).filter(Boolean))
+    ];
+
+    // Fetch student names and emails
+    let profiles = [];
+
+    if (studentIds.length > 0) {
+        const { data, error: profileError } = await supabaseClient
+            .from("profiles")
+            .select("id, full_name, email")
+            .in("id", studentIds);
+
+        if (profileError) throw profileError;
+
+        profiles = data || [];
+    }
+
+    return (orders || []).map(order => {
+        const student = profiles.find(
+            profile => profile.id === order.student_id
+        );
+
+        return {
+            id: order.id,
+            token: order.token,
+            studentId: order.student_id,
+            studentName: student?.full_name || "Unknown Student",
+            studentEmail: student?.email || "Email unavailable",
+            subtotal: Number(order.subtotal),
+            tax: Number(order.tax),
+            total: Number(order.total),
+            status: order.status,
+            paymentMethod: order.payment_method,
+            createdAt: order.created_at,
+            updatedAt: order.updated_at,
+            items: (order.order_items || []).map(item => ({
+                id: item.menu_item_id,
+                name: item.item_name,
+                price: Number(item.item_price),
+                quantity: item.quantity,
+                lineTotal: Number(item.line_total)
+            }))
+        };
+    });
 }
+
+
+async function loadStaffOrders() {
+    staffOrdersCache = await getAllStaffOrders();
+}
+
 
 
 // ==========================================
@@ -121,7 +184,7 @@ function getAllStaffOrders() {
 
 function renderStaffStats() {
 
-    const orders = getAllStaffOrders();
+    const orders = staffOrdersCache;
 
     const pending = orders.filter(
         order => order.status === "Pending"
@@ -388,7 +451,7 @@ function emptyStaffMessage(icon, title, description) {
 
 function renderStaffOrders() {
 
-    const orders = getAllStaffOrders();
+   const orders = staffOrdersCache;
 
     const pending = orders.filter(
         order => order.status === "Pending"
@@ -483,11 +546,9 @@ function renderStaffOrders() {
 // 10. UPDATE ORDER STATUS
 // ==========================================
 
-function updateOrderStatus(orderId, newStatus) {
+async function updateOrderStatus(orderId, newStatus) {
 
-    const orders = getOrders();
-
-    const order = orders.find(
+    const order = staffOrdersCache.find(
         item => item.id === orderId
     );
 
@@ -507,12 +568,23 @@ function updateOrderStatus(orderId, newStatus) {
         return;
     }
 
-    order.status = newStatus;
-    order.updatedAt = new Date().toISOString();
+    const { data, error } = await supabaseClient
+        .from("orders")
+        .update({
+            status: newStatus,
+            updated_at: new Date().toISOString()
+        })
+        .eq("id", orderId)
+        .select("id")
+        .maybeSingle();
 
-    saveOrders(orders);
-    renderStaffDashboard();
+    if (error || !data) {
+        console.error("ORDER STATUS UPDATE ERROR:", error);
+        alert("Could not update order status. Check staff permissions in Supabase.");
+        return;
+    }
 
+    await renderStaffDashboard();
 }
 
 
@@ -520,7 +592,7 @@ function updateOrderStatus(orderId, newStatus) {
 // 11. REJECT ORDER (FROM PENDING ONLY)
 // ==========================================
 
-function rejectOrder(orderId) {
+async function rejectOrder(orderId) {
 
     const confirmed = confirm(
         "Are you sure you want to reject this order?"
@@ -528,9 +600,7 @@ function rejectOrder(orderId) {
 
     if (!confirmed) return;
 
-    const orders = getOrders();
-
-    const order = orders.find(
+    const order = staffOrdersCache.find(
         item => item.id === orderId
     );
 
@@ -539,12 +609,24 @@ function rejectOrder(orderId) {
         return;
     }
 
-    order.status = "Rejected";
-    order.updatedAt = new Date().toISOString();
+    const { data, error } = await supabaseClient
+        .from("orders")
+        .update({
+            status: "Rejected",
+            updated_at: new Date().toISOString()
+        })
+        .eq("id", orderId)
+        .eq("status", "Pending")
+        .select("id")
+        .maybeSingle();
 
-    saveOrders(orders);
-    renderStaffDashboard();
+    if (error || !data) {
+        console.error("ORDER REJECTION ERROR:", error);
+        alert("Could not reject order. Check staff permissions in Supabase.");
+        return;
+    }
 
+    await renderStaffDashboard();
 }
 
 
@@ -552,17 +634,22 @@ function rejectOrder(orderId) {
 // 12. REFRESH DASHBOARD
 // ==========================================
 
-function renderStaffDashboard() {
 
-    renderStaffStats();
-    renderStaffOrders();
+async function renderStaffDashboard() {
+    try {
+        await loadStaffOrders();
+        renderStaffStats();
+        renderStaffOrders();
 
-    // Initialize Lucide icons on dynamically generated content
-    if (typeof lucide !== "undefined" && lucide.createIcons) {
-        lucide.createIcons();
+        if (typeof lucide !== "undefined" && lucide.createIcons) {
+            lucide.createIcons();
+        }
+    } catch (error) {
+        console.error("STAFF DASHBOARD ERROR:", error);
+        alert("Could not load staff orders: " + error.message);
     }
-
 }
+
 
 
 // ==========================================

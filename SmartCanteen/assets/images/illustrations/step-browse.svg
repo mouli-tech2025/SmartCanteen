@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180">
+  <defs>
+    <linearGradient id="step1Grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF7ED"/>
+      <stop offset="100%" stop-color="#FFEDD5"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="90" r="75" fill="url(#step1Grad)"/>
+  <rect x="75" y="35" width="90" height="110" rx="14" fill="#FFFFFF" stroke="#FED7AA" stroke-width="2.5"/>
+  <!-- Phone Screen Menu Items -->
+  <rect x="85" y="52" width="70" height="12" rx="4" fill="#F97316" opacity="0.85"/>
+  <rect x="85" y="72" width="22" height="22" rx="6" fill="#FED7AA"/>
+  <rect x="113" y="74" width="42" height="8" rx="3" fill="#252525" opacity="0.8"/>
+  <rect x="113" y="85" width="26" height="6" rx="3" fill="#777777" opacity="0.6"/>
+  <rect x="85" y="102" width="22" height="22" rx="6" fill="#FED7AA"/>
+  <rect x="113" y="104" width="38" height="8" rx="3" fill="#252525" opacity="0.8"/>
+  <rect x="113" y="115" width="20" height="6" rx="3" fill="#777777" opacity="0.6"/>
+  <!-- Search magnifying glass badge -->
+  <circle cx="160" cy="50" r="18" fill="#F97316"/>
+  <circle cx="158" cy="48" r="6" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+  <line x1="162" y1="52" x2="168" y2="58" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
+

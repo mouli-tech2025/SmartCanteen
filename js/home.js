@@ -341,15 +341,24 @@
   }
 
   // ==========================================
-  // 6. INITIALIZATION
-  // ==========================================
+// 6. INITIALIZATION
+// ==========================================
 
-  document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+
+    const result = await loadMenuData();
+
+    if (!result.ok) {
+        console.error("Homepage could not load menu data.");
+        return;
+    }
+
     initNavbar();
     renderPopularFood();
     adaptCTAsForSession();
     initScrollReveal();
-  });
+
+});
 
 })();
 

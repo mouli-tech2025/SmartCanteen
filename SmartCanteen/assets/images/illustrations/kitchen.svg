@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="kitchGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF9F1"/>
+      <stop offset="100%" stop-color="#FED7AA"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="120" cy="90" r="70" fill="url(#kitchGrad)" opacity="0.6"/>
+
+  <g transform="translate(65, 30)">
+    <!-- Chef Hat -->
+    <path d="M 35 45 C 15 45, 10 25, 25 15 C 20 0, 45 -5, 55 10 C 65 -5, 90 0, 85 15 C 100 25, 95 45, 75 45 Z" fill="#FFFFFF" stroke="#252525" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Hat band -->
+    <rect x="33" y="45" width="44" height="12" rx="3" fill="#F97316"/>
+
+    <!-- Pan -->
+    <g transform="translate(10, 68)">
+      <ellipse cx="45" cy="30" rx="42" ry="14" fill="#252525"/>
+      <ellipse cx="45" cy="27" rx="36" ry="11" fill="#374151"/>
+      <!-- Food inside pan -->
+      <circle cx="35" cy="26" r="6" fill="#F59E0B"/>
+      <circle cx="52" cy="28" r="5" fill="#16A36A"/>
+      <circle cx="44" cy="24" r="4" fill="#DC2626"/>
+      <!-- Pan handle -->
+      <path d="M 85 27 L 115 20" stroke="#252525" stroke-width="7" stroke-linecap="round"/>
+    </g>
+
+    <!-- Steam -->
+    <path d="M 50 68 Q 45 55, 55 45" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 65 65 Q 60 52, 70 42" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+</svg>
+

@@ -209,22 +209,7 @@ function changeRole(role) {
 // 7. STUDENT REGISTRATION
 // ==========================================
 
-function registerStudent(name, email, password) {
-    const users = getUsers();
-
-    // Check duplicate email
-    const existingUser = users.find(
-        user => user.email.toLowerCase() === email.toLowerCase()
-    );
-
-    if (existingUser) {
-        showMessage(
-            "An account with this email already exists.",
-            "error"
-        );
-        return;
-    }
-
+async function registerStudent(name, email, password) {
     // Validate name
     if (!name || name.trim().length < 2) {
         showMessage(
@@ -243,117 +228,138 @@ function registerStudent(name, email, password) {
         return;
     }
 
-    // Create new student
-    const newStudent = {
-        id: "STU" + Date.now(),
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        password: password,
-        role: "student",
-        createdAt: new Date().toISOString()
-    };
+    try {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email.trim().toLowerCase(),
+            password: password,
+            options: {
+                data: {
+                    full_name: name.trim()
+                }
+            }
+        });
 
-    users.push(newStudent);
-    saveUsers(users);
+        if (error) throw error;
 
-    showMessage(
-        "Registration successful! Please sign in.",
-        "success"
-    );
+        showMessage(
+            data.session
+                ? "Registration successful! You can now sign in."
+                : "Registration successful! Please check your email to confirm your account.",
+            "success"
+        );
 
-    // Switch back to login mode
-    setTimeout(() => {
-        isRegisterMode = false;
-        updateAuthMode();
-        const emailField = document.getElementById("email");
-        const passwordField = document.getElementById("password");
-        if (emailField) emailField.value = email;
-        if (passwordField) passwordField.value = "";
-    }, 1000);
+        setTimeout(() => {
+            isRegisterMode = false;
+            updateAuthMode();
+
+            const emailField = document.getElementById("email");
+            const passwordField = document.getElementById("password");
+
+            if (emailField) emailField.value = email;
+            if (passwordField) passwordField.value = "";
+        }, 1800);
+
+    } catch (error) {
+        console.error("Registration error:", error);
+        showMessage(error.message, "error");
+    }
 }
-
 
 // ==========================================
 // 8. USER LOGIN
 // ==========================================
+async function loginUser(email, password) {
+    try {
+        // Sign in through Supabase Auth
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email.trim().toLowerCase(),
+                password: password
+            });
 
-function loginUser(email, password) {
-    let user = null;
+        if (error) throw error;
 
-    if (selectedRole === "student") {
-        const users = getUsers();
+        const authUser = data.user;
 
-        user = users.find(
-            item =>
-                item.email.toLowerCase() === email.toLowerCase() &&
-                item.password === password &&
-                item.role === "student"
+        // Fetch the user's profile and role
+        const { data: profile, error: profileError } =
+            await supabaseClient
+                .from("profiles")
+                .select("id, full_name, email, role")
+                .eq("id", authUser.id)
+                .single();
+
+        if (profileError) throw profileError;
+
+        // Ensure the selected portal matches the actual role
+        if (profile.role !== selectedRole) {
+            await supabaseClient.auth.signOut();
+
+            showMessage(
+                "This account does not belong to the selected portal.",
+                "error"
+            );
+            return;
+        }
+
+        // Save a frontend session for existing dashboard code
+        const session = {
+            id: authUser.id,
+            name: profile.full_name,
+            email: profile.email,
+            role: profile.role,
+            loginTime: new Date().toISOString()
+        };
+
+        localStorage.setItem(
+            SESSION_KEY,
+            JSON.stringify(session)
         );
 
-        // Fallback check against DEMO_ACCOUNTS student
-        if (!user && email.toLowerCase() === DEMO_ACCOUNTS.student.email.toLowerCase() && password === DEMO_ACCOUNTS.student.password) {
-            user = DEMO_ACCOUNTS.student;
-        }
-
-    } else {
-        const account = DEMO_ACCOUNTS[selectedRole];
-
-        if (
-            email.toLowerCase() === account.email.toLowerCase() &&
-            password === account.password
-        ) {
-            user = account;
-        }
-    }
-
-    if (!user) {
         showMessage(
-            "Invalid email or password for the selected portal.",
+            "Login successful! Redirecting...",
+            "success"
+        );
+
+        const dashboardPages = {
+            student: "student.html",
+            staff: "staff.html",
+            admin: "admin.html"
+        };
+
+        setTimeout(() => {
+            window.location.href =
+                dashboardPages[profile.role] || "login.html";
+        }, 600);
+
+    } catch (error) {
+        console.error("Login error:", error);
+
+        showMessage(
+            error.message || "Invalid email or password.",
             "error"
         );
-        return;
     }
-
-    // Create login session
-    const session = {
-        id: user.id || user.role.toUpperCase() + "001",
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        loginTime: new Date().toISOString()
-    };
-
-    localStorage.setItem(
-        SESSION_KEY,
-        JSON.stringify(session)
-    );
-
-    showMessage(
-        "Login successful! Redirecting...",
-        "success"
-    );
-
-    // Redirect based on role
-    const dashboardPages = {
-        student: "student.html",
-        staff: "staff.html",
-        admin: "admin.html"
-    };
-
-    setTimeout(() => {
-        window.location.href = dashboardPages[user.role] || "login.html";
-    }, 600);
 }
-
 
 // ==========================================
 // 9. LOGOUT FUNCTION
 // ==========================================
 
-function logoutUser() {
-    localStorage.removeItem(SESSION_KEY);
-    // Replace window location so pressing back does not return
-    window.location.replace("login.html");
+async function logoutUser() {
+    try {
+        const { error } = await supabaseClient.auth.signOut();
+
+        if (error) throw error;
+
+        localStorage.removeItem(SESSION_KEY);
+
+        window.location.replace("login.html");
+
+    } catch (error) {
+        console.error("Logout error:", error);
+        showMessage("Unable to log out. Please try again.", "error");
+    }
 }
 
 
@@ -417,7 +423,7 @@ function enforceRole(expectedRole) {
 const authForm = document.getElementById("authForm");
 
 if (authForm) {
-    authForm.addEventListener("submit", function(event) {
+    authForm.addEventListener("submit", async function(event) {
         event.preventDefault();
 
         const email = document.getElementById("email")
@@ -431,14 +437,14 @@ if (authForm) {
             return;
         }
 
-        if (isRegisterMode) {
-            const name = document.getElementById("name")
-                .value.trim();
+      if (isRegisterMode) {
+    const name = document.getElementById("name")
+        .value.trim();
 
-            registerStudent(name, email, password);
-        } else {
-            loginUser(email, password);
-        }
+    await registerStudent(name, email, password);
+} else {
+    await loginUser(email, password);
+}
     });
 
     document.addEventListener("DOMContentLoaded", function() {
