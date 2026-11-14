@@ -293,7 +293,7 @@ Pending  ──►  Preparing  ──►  Ready  ──►  Completed
 
 | Landing Page | Student Ordering Portal |
 |:---:|:---:|
-| ![Landing Page](Home.png) | ![Student Portal](student.png) |
+| ![Hom Page](Home.png) | ![Student Portal](student.png) |
 
 | Staff Dashboard | Admin Panel |
 |:---:|:---:|
