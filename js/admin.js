@@ -36,6 +36,9 @@ function getUsers() {
 }
 let adminUsersCache = [];
 let adminUsersError = "";
+let adminOrdersCache = [];
+let adminOrdersError = "";
+let isFetchingAdminOrders = false;
 
 async function loadAdminUsers() {
     const { data, error } = await supabaseClient
@@ -53,6 +56,99 @@ console.log("SUPABASE USERS DATA:", data);
 
     adminUsersCache = data || [];
     adminUsersError = "";
+}
+
+async function getAllAdminOrders() {
+    const { data: orders, error } = await supabaseClient
+        .from("orders")
+        .select(`
+            id, token, student_id, subtotal, tax, total,
+            status, payment_method, created_at, updated_at,
+            order_items (
+                id, menu_item_id, item_name,
+                item_price, quantity, line_total
+            )
+        `)
+        .order("created_at", { ascending: true });
+
+    if (error) throw error;
+
+    // Get student IDs from orders
+    const studentIds = [
+        ...new Set((orders || []).map(order => order.student_id).filter(Boolean))
+    ];
+
+    // Fetch student names and emails
+    let profiles = [];
+    if (studentIds.length > 0) {
+        try {
+            const { data, error: profileError } = await supabaseClient
+                .from("profiles")
+                .select("id, full_name, email")
+                .in("id", studentIds);
+
+            if (!profileError && data) {
+                profiles = data;
+            }
+        } catch (profileErr) {
+            console.warn("Could not fetch profiles for orders:", profileErr);
+        }
+    }
+
+    const menu = typeof getMenu === "function" ? getMenu() : [];
+
+    return (orders || []).map(order => {
+        const student = profiles.find(
+            profile => profile.id === order.student_id
+        );
+
+        return {
+            id: order.id,
+            token: order.token,
+            studentId: order.student_id,
+            studentName: student?.full_name || "Unknown Student",
+            studentEmail: student?.email || "Email unavailable",
+            subtotal: Number(order.subtotal || 0),
+            tax: Number(order.tax || 0),
+            total: Number(order.total || 0),
+            status: order.status,
+            paymentMethod: order.payment_method || "Pay at Counter",
+            createdAt: order.created_at,
+            updatedAt: order.updated_at,
+            items: (order.order_items || []).map(item => {
+                const menuItem = menu.find(m => String(m.id) === String(item.menu_item_id));
+                return {
+                    id: item.menu_item_id,
+                    name: item.item_name,
+                    category: menuItem ? menuItem.category : "Menu Item",
+                    price: Number(item.item_price || 0),
+                    quantity: Number(item.quantity || 0),
+                    lineTotal: Number(item.line_total || 0)
+                };
+            })
+        };
+    });
+}
+
+async function loadAdminOrders() {
+    if (isFetchingAdminOrders) return adminOrdersCache;
+    isFetchingAdminOrders = true;
+
+    try {
+        const fetched = await getAllAdminOrders();
+        adminOrdersCache = fetched || [];
+        adminOrdersError = "";
+        return adminOrdersCache;
+    } catch (error) {
+        console.error("SUPABASE ADMIN ORDERS ERROR:", error);
+        adminOrdersError = error.message || "Failed to load orders";
+        if (!adminOrdersCache || adminOrdersCache.length === 0) {
+            adminOrdersCache = typeof getOrders === "function" ? getOrders() : [];
+        }
+        return adminOrdersCache;
+    } finally {
+        isFetchingAdminOrders = false;
+    }
 }
 
 function getOrderStatusClass(status) {
@@ -116,6 +212,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         showAdminMessage("Could not load users: " + adminUsersError, true);
     }
 
+    try {
+        await loadAdminOrders();
+    } catch (error) {
+        console.error("Could not load orders:", error);
+        adminOrdersError = error.message || "Unknown error";
+        showAdminMessage("Could not load orders: " + adminOrdersError, true);
+    }
+
     renderAdminDashboard();
 
     // Initialize Lucide icons for static HTML elements
@@ -124,16 +228,18 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     // Storage event for live cross-tab updates
-    window.addEventListener("storage", function (event) {
+    window.addEventListener("storage", async function (event) {
         if (!event.key || [STORAGE_KEYS.ORDERS, STORAGE_KEYS.MENU, STORAGE_KEYS.CATEGORIES, STORAGE_KEYS.USERS].includes(event.key)) {
+            await loadAdminOrders();
             renderAdminDashboard();
         }
     });
 
     // Refresh data periodically every 3 seconds (skip if form is active)
-    setInterval(function () {
+    setInterval(async function () {
         const formPanel = document.getElementById("foodFormPanel");
         if (!formPanel || formPanel.style.display === "none") {
+            await loadAdminOrders();
             renderAdminDashboard();
         }
     }, 3000);
@@ -168,7 +274,7 @@ function setupAdminNavigation() {
 
 function renderAdminDashboard() {
 
-    const orders = getOrders();
+    const orders = adminOrdersCache;
     const menu = getMenu();
     const users = adminUsersCache;
 
@@ -807,6 +913,9 @@ function renderReportsBreakdown(orders) {
 }
 
 // Refresh dashboard on tab focus
-window.addEventListener("focus", renderAdminDashboard);
+window.addEventListener("focus", async function () {
+    await loadAdminOrders();
+    renderAdminDashboard();
+});
 
 console.log("Admin Dashboard initialized.");
