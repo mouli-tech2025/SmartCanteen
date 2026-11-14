@@ -780,26 +780,6 @@ async function handleDeleteCategory(name) {
     }
 }
 
-// ==========================================
-// 10. RESET DEMO DATA
-// ==========================================
-
-function handleResetDemoData() {
-    const confirmed = confirm(
-        "Are you sure you want to reset demo data?\n\nThis will restore the original sample menu, empty orders, and reset default categories. Your user accounts and login session will be kept safe."
-    );
-
-    if (!confirmed) return;
-
-    if (typeof resetDemoData === "function") {
-        resetDemoData();
-    }
-
-    showAdminMessage("Demo data has been reset to default state.");
-    setTimeout(() => {
-        window.location.reload();
-    }, 700);
-}
 
 // ==========================================
 // 11. USER MANAGEMENT

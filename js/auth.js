@@ -127,7 +127,14 @@ function updateAuthMode() {
             `;
         }
 
-        if (demoInfo) demoInfo.classList.remove("hidden");
+        if (demoInfo) {
+            if (selectedRole === "student") {
+                demoInfo.classList.add("hidden");
+                demoInfo.innerHTML = "";
+            } else {
+                demoInfo.classList.remove("hidden");
+            }
+        }
         if (passwordInput) passwordInput.autocomplete = "current-password";
     }
 
@@ -182,24 +189,22 @@ function changeRole(role) {
     const note = document.getElementById("demoInfo");
     if (note) {
         if (role === "staff") {
+            note.classList.remove("hidden");
             note.innerHTML = `
                 <strong>Staff Demo Credentials</strong><br>
                 Email: staff@smartcanteen.com<br>
                 Password: Staff@123
             `;
         } else if (role === "admin") {
+            note.classList.remove("hidden");
             note.innerHTML = `
                 <strong>Admin Demo Credentials</strong><br>
                 Email: admin@smartcanteen.com<br>
                 Password: Admin@123
             `;
         } else {
-            note.innerHTML = `
-                <strong>Student Demo Credentials</strong><br>
-                Email: student@smartcanteen.com<br>
-                Password: Student@123<br>
-                <small style="color:#78716c;">(Or click Create Account to register your own profile)</small>
-            `;
+            note.classList.add("hidden");
+            note.innerHTML = "";
         }
     }
 }
