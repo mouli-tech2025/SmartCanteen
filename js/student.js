@@ -611,9 +611,8 @@ async function checkout() {
 
     // Generate a real UUID for the order
     const orderId = crypto.randomUUID();
-    const token = "TK-" + Date.now() + "-" +
-    crypto.randomUUID().slice(0, 6).toUpperCase();
-    const now = new Date().toISOString();
+const token = "TK-" + crypto.randomUUID().toUpperCase();
+const now = new Date().toISOString();
 
     const newOrder = {
         id: orderId,
